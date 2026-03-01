@@ -62,7 +62,7 @@ ws_manager = ConnectionManager()
 @app.get("/")
 async def root():
     # 优先返回前端页面
-    index_path = os.path.join(os.path.dirname(__file__), "templates", "index.html")
+    index_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {
@@ -72,9 +72,9 @@ async def root():
         "frontend": "Open / to view frontend",
         "features": [
             "REST API",
-            "WebSocket 实时推送",
-            "Polars 高级分析",
-            "多维度过滤"
+            "WebSocket real-time",
+            "Polars advanced analytics",
+            "Multi-filter"
         ]
     }
 
