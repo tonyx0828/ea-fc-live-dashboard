@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚽ EA FC Live - Real-Time Football Dashboard</title>
+    <title>🏆 Live Sports Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         :root {
             --bg-primary: #0a0a0f;
             --bg-secondary: #12121a;
             --bg-card: #1a1a24;
             --bg-card-hover: #222230;
-            --accent-primary: #00d4ff;
+            --accent: #00d4ff;
             --accent-secondary: #7c3aed;
             --accent-live: #ff4757;
             --accent-success: #2ed573;
@@ -26,52 +20,38 @@
             --border-color: #2a2a3a;
         }
         
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             min-height: 100vh;
             color: var(--text-primary);
-            line-height: 1.6;
         }
         
-        /* Background pattern */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background: 
                 radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
-                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.01) 50px, rgba(255,255,255,0.01) 51px);
+                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         /* Header */
         header {
             text-align: center;
             padding: 40px 20px;
-            margin-bottom: 30px;
-        }
-        
-        .logo {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
         }
         
         h1 {
             font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -84,7 +64,6 @@
             gap: 20px;
             flex-wrap: wrap;
             color: var(--text-secondary);
-            font-size: 0.9rem;
         }
         
         .status-badge {
@@ -95,7 +74,6 @@
             background: rgba(0, 212, 255, 0.1);
             border: 1px solid rgba(0, 212, 255, 0.3);
             border-radius: 25px;
-            font-size: 0.85rem;
         }
         
         .status-dot {
@@ -107,11 +85,45 @@
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.2); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        /* Stats Bar */
+        /* Sport Tabs */
+        .sport-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .sport-tab {
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .sport-tab:hover, .sport-tab.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+        
+        .sport-tab .count {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+        
+        /* Stats */
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -125,50 +137,36 @@
             border-radius: 16px;
             padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent-primary);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
         }
         
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--accent-primary);
-            margin-bottom: 5px;
+            color: var(--accent);
         }
         
         .stat-label {
             font-size: 0.8rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
-        /* Match Card */
-        .matches-grid {
-            display: grid;
-            gap: 20px;
-        }
+        /* Matches */
+        .matches-grid { display: grid; gap: 20px; }
         
         .match-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 25px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
         
         .match-card:hover {
             background: var(--bg-card-hover);
-            border-color: rgba(0, 212, 255, 0.3);
             transform: scale(1.01);
         }
         
-        /* League Header */
         .match-header {
             display: flex;
             justify-content: space-between;
@@ -178,31 +176,12 @@
             border-bottom: 1px solid var(--border-color);
         }
         
-        .league-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
         .league-badge {
             padding: 5px 12px;
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(0, 212, 255, 0.2));
             border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .country-badge {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        
-        .match-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .live-indicator {
@@ -226,12 +205,6 @@
             animation: pulse 1s infinite;
         }
         
-        .match-time {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        /* Teams */
         .teams-container {
             display: flex;
             justify-content: space-between;
@@ -259,7 +232,6 @@
         .team-name {
             font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 5px;
         }
         
         .team-venue {
@@ -267,7 +239,6 @@
             color: var(--text-muted);
         }
         
-        /* Score */
         .score-container {
             display: flex;
             flex-direction: column;
@@ -283,42 +254,16 @@
             font-weight: 700;
         }
         
-        .score-value {
-            min-width: 50px;
-            text-align: center;
-        }
-        
-        .score-divider {
-            color: var(--text-muted);
-        }
-        
-        .score.halftime .score-divider::before {
-            content: '(';
-        }
-        
-        .score.halftime .score-divider::after {
-            content: ')';
-        }
+        .score-value { min-width: 50px; text-align: center; }
+        .score-divider { color: var(--text-muted); }
         
         .score-label {
             font-size: 0.7rem;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 30px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        /* Loading */
-        .loading {
+        /* Loading/Error */
+        .loading, .no-matches, .error {
             text-align: center;
             padding: 60px;
             color: var(--text-secondary);
@@ -328,39 +273,17 @@
             width: 40px;
             height: 40px;
             border: 3px solid var(--border-color);
-            border-top-color: var(--accent-primary);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Error */
-        .error {
-            background: rgba(255, 71, 87, 0.1);
-            border: 1px solid rgba(255, 71, 87, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            color: var(--accent-live);
-        }
+        .error { background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); border-radius: 12px; color: var(--accent-live); }
         
-        /* No matches */
-        .no-matches {
-            text-align: center;
-            padding: 60px;
-            color: var(--text-secondary);
-        }
-        
-        .no-matches-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-        
-        /* Refresh button */
+        /* Refresh */
         .refresh-btn {
             position: fixed;
             bottom: 30px;
@@ -368,79 +291,65 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
             border: none;
             color: white;
             font-size: 1.5rem;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
-        .refresh-btn:hover {
-            transform: rotate(180deg) scale(1.1);
+        .refresh-btn:hover { transform: rotate(180deg); }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
         }
         
-        .refresh-btn.refreshing {
-            animation: spin 1s linear infinite;
-        }
-        
-        /* Responsive */
         @media (max-width: 768px) {
-            .teams-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .score {
-                font-size: 2rem;
-            }
-            
-            .match-header {
-                flex-direction: column;
-                gap: 15px;
-            }
+            .teams-container { flex-direction: column; }
+            .score { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="logo">⚽</div>
-            <h1>EA FC Live Dashboard</h1>
+            <h1>🏆 Live Sports Dashboard</h1>
             <div class="header-meta">
                 <div class="status-badge">
                     <span class="status-dot"></span>
-                    <span id="connection-status">Connecting...</span>
+                    <span id="connection-status">Loading...</span>
                 </div>
-                <span id="last-update">Last updated: --</span>
+                <span id="last-update">--</span>
             </div>
         </header>
         
-        <div id="error-container"></div>
+        <!-- Sport Tabs -->
+        <div class="sport-tabs" id="sport-tabs"></div>
         
+        <!-- Stats -->
         <div class="stats-bar">
             <div class="stat-card">
                 <div class="stat-value" id="match-count">-</div>
                 <div class="stat-label">Live Matches</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="total-goals">-</div>
-                <div class="stat-label">Total Goals</div>
+                <div class="stat-value" id="total-score">-</div>
+                <div class="stat-label">Total Score</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="leagues-count">-</div>
-                <div class="stat-label">Leagues</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="avg-goals">-</div>
-                <div class="stat-label">Avg Goals/Match</div>
+                <div class="stat-value" id="sports-count">-</div>
+                <div class="stat-label">Sports</div>
             </div>
         </div>
         
+        <!-- Matches -->
         <div id="matches-container" class="matches-grid">
             <div class="loading">
                 <div class="loading-spinner"></div>
@@ -454,116 +363,134 @@
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="refreshData()" title="Refresh">🔄</button>
+    <button class="refresh-btn" onclick="loadData()" title="Refresh">🔄</button>
     
     <script>
-        // Team emoji mapping
-        const teamEmojis = {
-            'Manchester United': '🔴',
-            'Liverpool': '🔴',
-            'Arsenal': '🔴',
-            'Chelsea': '🔵',
-            'Manchester City': '🔵',
-            'Tottenham Hotspur': '⚪',
-            'Barcelona': '🔵🔴',
-            'Real Madrid': '⚪',
-            'Atletico Madrid': '🔴',
-            'Bayern Munich': '🔴',
-            'Borussia Dortmund': '🟡',
-            'Juventus': '⚫⚪',
-            'AC Milan': '🔴⚫',
-            'Inter Milan': '🔵⚫',
-            'Paris Saint-Germain': '🔵',
-            'Marseille': '🔵⚪'
+        const SPORTS = {
+            all: { emoji: '🏆', name: 'All Sports' },
+            football: { emoji: '⚽', name: 'Football' },
+            nba: { emoji: '🏀', name: 'NBA' },
+            nfl: { emoji: '🏈', name: 'NFL' },
+            hockey: { emoji: '🏒', name: 'Hockey' }
         };
         
-        function getTeamEmoji(teamName) {
-            return teamEmojis[teamName] || '⚽';
-        }
+        let currentSport = 'all';
         
         async function loadData() {
             const statusEl = document.getElementById('connection-status');
             const container = document.getElementById('matches-container');
-            const refreshBtn = document.querySelector('.refresh-btn');
             
             statusEl.textContent = 'Loading...';
-            refreshBtn.classList.add('refreshing');
             
             try {
-                const response = await fetch('/api/matches/live');
+                const response = await fetch('/api/sports/live');
                 const result = await response.json();
                 
-                if (result.matches && result.matches.length > 0) {
-                    displayMatches(result.matches);
-                    updateStats(result);
+                // Render tabs
+                renderTabs(result.sports || {});
+                
+                // Filter by current sport
+                let matches = [];
+                if (currentSport === 'all') {
+                    // Get all matches from all sports
+                    Object.values(result.sports || {}).forEach(sport => {
+                        matches = matches.concat(sport.matches || []);
+                    });
+                } else if (result.sports && result.sports[currentSport]) {
+                    matches = result.sports[currentSport].matches || [];
+                }
+                
+                if (matches.length > 0) {
+                    displayMatches(matches);
                     statusEl.textContent = '🟢 Live';
                 } else {
                     container.innerHTML = `
                         <div class="no-matches">
-                            <div class="no-matches-icon">😴</div>
+                            <div style="font-size: 4rem; margin-bottom: 20px;">😴</div>
                             <p>No live matches right now</p>
-                            <p style="font-size: 0.85rem; margin-top: 10px;">Check back later for live football</p>
+                            <p style="font-size: 0.85rem; margin-top: 10px;">Check back later for live sports</p>
                         </div>
                     `;
                     document.getElementById('match-count').textContent = '0';
-                    statusEl.textContent = '⚪ No matches';
                 }
+                
+                // Update stats
+                document.getElementById('match-count').textContent = result.total_matches || 0;
+                document.getElementById('sports-count').textContent = Object.keys(result.sports || {}).length;
+                
             } catch (e) {
                 console.error('Error:', e);
                 container.innerHTML = `<div class="error">Error: ${e.message}</div>`;
                 statusEl.textContent = '🔴 Error';
             }
             
-            refreshBtn.classList.remove('refreshing');
-            document.getElementById('last-update').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+            document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+        }
+        
+        function renderTabs(sportsData) {
+            const tabsEl = document.getElementById('sport-tabs');
+            let tabs = `<button class="sport-tab ${currentSport === 'all' ? 'active' : ''}" onclick="switchSport('all')">
+                🏆 All <span class="count">${Object.values(sportsData).reduce((a, s) => a + (s.count || 0), 0)}</span>
+            </button>`;
+            
+            Object.entries(sportsData).forEach(([key, data]) => {
+                tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" onclick="switchSport('${key}')">
+                    ${data.emoji} ${data.name} <span class="count">${data.count || 0}</span>
+                </button>`;
+            });
+            
+            tabsEl.innerHTML = tabs;
+        }
+        
+        function switchSport(sport) {
+            currentSport = sport;
+            loadData();
         }
         
         function displayMatches(matches) {
             const container = document.getElementById('matches-container');
             
             container.innerHTML = matches.map(match => {
-                const isLive = ['1H', '2H', 'ET'].includes(match.status);
-                const statusText = match.elapsed ? `${match.elapsed}'` : match.status_long;
+                const isLive = !['FT', 'NS', 'POST'].includes(match.status);
+                const statusText = match.time ? `${match.time}'` : match.status;
+                
+                // Get sport emoji
+                const sportEmoji = match.sport === 'basketball' || match.sport === 'nba' ? '🏀' :
+                                   match.sport === 'american-football' || match.sport === 'nfl' ? '🏈' :
+                                   match.sport === 'hockey' ? '🏒' : '⚽';
                 
                 return `
                     <div class="match-card">
                         <div class="match-header">
-                            <div class="league-info">
-                                <span class="league-badge">${match.league_name}</span>
-                                <span class="country-badge">${match.league_country}</span>
+                            <div>
+                                <span class="league-badge">${sportEmoji} ${match.league?.name || 'Unknown'}</span>
                             </div>
-                            <div class="match-status">
-                                ${isLive ? `
-                                    <div class="live-indicator">
-                                        <span class="dot"></span>
-                                        LIVE ${match.elapsed}'
-                                    </div>
-                                ` : `
-                                    <span class="match-time">${match.status_long}</span>
-                                `}
+                            <div class="live-indicator">
+                                <span class="dot"></span>
+                                LIVE ${statusText}
                             </div>
                         </div>
                         
                         <div class="teams-container">
                             <div class="team">
-                                <div class="team-logo">${getTeamEmoji(match.home_team)}</div>
-                                <div class="team-name">${match.home_team}</div>
-                                <div class="team-venue">📍 ${match.home_stadium || match.venue || 'Home'}</div>
+                                <div class="team-logo">${sportEmoji}</div>
+                                <div class="team-name">${match.home_team?.name || 'TBD'}</div>
+                                <div class="team-venue">📍 ${match.home_team?.venue || match.home_team?.city || 'Home'}</div>
                             </div>
                             
                             <div class="score-container">
                                 <div class="score">
-                                    <span class="score-value">${match.home_score}</span>
+                                    <span class="score-value">${match.home_score || 0}</span>
                                     <span class="score-divider">-</span>
-                                    <span class="score-value">${match.away_score}</span>
+                                    <span class="score-value">${match.away_score || 0}</span>
                                 </div>
-                                <span class="score-label">${match.venue ? match.venue + ', ' + match.venue_city : ''}</span>
+                                <span class="score-label">${match.home_team?.venue || ''}</span>
                             </div>
                             
                             <div class="team">
-                                <div class="team-logo">${getTeamEmoji(match.away_team)}</div>
-                                <div class="team-name">${match.away_team}</div>
-                                <div class="team-venue">📍 ${match.away_stadium || 'Away'}</div>
+                                <div class="team-logo">${sportEmoji}</div>
+                                <div class="team-name">${match.away_team?.name || 'TBD'}</div>
+                                <div class="team-venue">📍 ${match.away_team?.venue || match.away_team?.city || 'Away'}</div>
                             </div>
                         </div>
                     </div>
@@ -571,33 +498,7 @@
             }).join('');
         }
         
-        function updateStats(result) {
-            const matches = result.matches;
-            
-            // Match count
-            document.getElementById('match-count').textContent = matches.length;
-            
-            // Total goals
-            let totalGoals = 0;
-            matches.forEach(m => {
-                totalGoals += (m.home_score || 0) + (m.away_score || 0);
-            });
-            document.getElementById('total-goals').textContent = totalGoals;
-            
-            // Unique leagues
-            const leagues = [...new Set(matches.map(m => m.league_name))];
-            document.getElementById('leagues-count').textContent = leagues.length;
-            
-            // Average goals
-            const avgGoals = matches.length > 0 ? (totalGoals / matches.length).toFixed(1) : 0;
-            document.getElementById('avg-goals').textContent = avgGoals;
-        }
-        
-        function refreshData() {
-            loadData();
-        }
-        
-        // Auto-refresh every 30 seconds
+        // Auto-refresh
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             setInterval(loadData, 30000);

@@ -6,6 +6,7 @@ from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 
 from api.football_client import FootballAPIClient
+from api.sports_client import MultiSportAPIClient
 from processing.polars_processor import MatchAnalyzer
 from config import settings
 
@@ -14,6 +15,7 @@ router = APIRouter()
 
 # 初始化组件
 football_client = FootballAPIClient(settings.API_FOOTBALL_KEY)
+sports_client = MultiSportAPIClient(settings.API_FOOTBALL_KEY)
 match_analyzer = MatchAnalyzer()
 
 
@@ -164,4 +166,50 @@ async def compare_teams(team1_id: int, team2_id: int):
         "team1": team1_stats.get("team", {}).get("name"),
         "team2": team2_stats.get("team", {}).get("name"),
         "comparison": comparison
+    }
+
+
+# ============ Multi-Sport Endpoints ============
+
+@router.get("/sports/live")
+async def get_all_sports_live():
+    """
+    Get live matches for all available sports
+    Returns matches from Football, NBA, NFL, NHL, etc.
+    """
+    all_matches = sports_client.get_all_live_matches()
+    
+    total_matches = sum(sport["count"] for sport in all_matches.values())
+    
+    return {
+        "total_matches": total_matches,
+        "sports": all_matches
+    }
+
+
+@router.get("/sports/{sport}/live")
+async def get_sport_live(sport: str):
+    """
+    Get live matches for a specific sport
+    
+    Available sports:
+    - football (soccer)
+    - nba (basketball)
+    - nfl (american football)
+    - hockey (ice hockey)
+    """
+    valid_sports = ["football", "nba", "nfl", "hockey"]
+    
+    if sport.lower() not in valid_sports:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid sport. Available: {', '.join(valid_sports)}"
+        )
+    
+    matches = sports_client.get_live_matches(sport.lower())
+    
+    return {
+        "sport": sport.lower(),
+        "count": len(matches),
+        "matches": matches
     }
