@@ -554,14 +554,12 @@
             </button>`;
             
             Object.entries(sports).forEach(([key, data]) => {
-                if (data.count > 0) {
-                    // Use basketball emoji for basketball tab
-                    const emoji = key === 'basketball' ? '🏀' : getSportEmoji(key);
-                    tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" 
-                        onclick="switchSport('${key}')">
-                        ${emoji} ${data.name} <span class="count">${data.count}</span>
-                    </button>`;
-                }
+                // Show all sports even if count is 0
+                const emoji = key === 'basketball' ? '🏀' : getSportEmoji(key);
+                tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" 
+                    onclick="switchSport('${key}')">
+                    ${emoji} ${data.name} <span class="count">${data.count}</span>
+                </button>`;
             });
             
             tabsEl.innerHTML = tabs;
@@ -621,7 +619,15 @@
             const sportsCount = Object.values(allData.sports).filter(s => s.count > 0).length;
             document.getElementById('sports-count').textContent = sportsCount;
             
-            // Calculate avg score - FIX: Handle API response format
+            // Hide avg score when "All" is selected, show only for specific sport
+            const avgScoreEl = document.getElementById('avg-score');
+            if (currentSport === 'all') {
+                avgScoreEl.parentElement.style.display = 'none';
+            } else {
+                avgScoreEl.parentElement.style.display = 'block';
+            }
+            
+            // Calculate avg score only for specific sport
             let totalScore = 0;
             matches.forEach(m => {
                 const home = m.scores?.home?.total ?? m.home_score ?? 0;

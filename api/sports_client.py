@@ -14,32 +14,74 @@ SPORTS = {
     "football": {
         "name": "Football",
         "leagues": [39, 140, 78, 135, 61],  # Premier League, La Liga, Bundesliga, Serie A, Ligue 1
-        "emoji": "⚽"
+        "emoji": "⚽",
+        "api_base": "https://v3.football.api-sports.io"
     },
     "basketball": {
         "name": "Basketball",
         "leagues": [12, 13],  # NBA, EuroLeague
-        "emoji": "🏀"
+        "emoji": "🏀",
+        "api_base": "https://v1.basketball.api-sports.io"
     },
     "nba": {
         "name": "NBA",
         "leagues": [12],
-        "emoji": "🏀"
+        "emoji": "🏀",
+        "api_base": "https://v2.nba.api-sports.io"
     },
     "nfl": {
         "name": "NFL",
-        "leagues": [1],  # NFL
-        "emoji": "🏈"
+        "leagues": [1],
+        "emoji": "🏈",
+        "api_base": "https://v1.american-football.api-sports.io"
     },
     "hockey": {
         "name": "Hockey",
         "leagues": [57],  # NHL
-        "emoji": "🏒"
+        "emoji": "🏒",
+        "api_base": "https://v1.hockey.api-sports.io"
     },
     "baseball": {
         "name": "Baseball",
         "leagues": [1],  # MLB
-        "emoji": "⚾"
+        "emoji": "⚾",
+        "api_base": "https://v1.baseball.api-sports.io"
+    },
+    "afl": {
+        "name": "AFL",
+        "leagues": [1],
+        "emoji": "🏉",
+        "api_base": "https://v1.afl.api-sports.io"
+    },
+    "formula1": {
+        "name": "Formula 1",
+        "leagues": [1],
+        "emoji": "🏎️",
+        "api_base": "https://v1.formula-1.api-sports.io"
+    },
+    "handball": {
+        "name": "Handball",
+        "leagues": [1],
+        "emoji": "🤾",
+        "api_base": "https://v1.handball.api-sports.io"
+    },
+    "mma": {
+        "name": "MMA",
+        "leagues": [1],
+        "emoji": "🥊",
+        "api_base": "https://v1.mma.api-sports.io"
+    },
+    "rugby": {
+        "name": "Rugby",
+        "leagues": [1],
+        "emoji": "🏉",
+        "api_base": "https://v1.rugby.api-sports.io"
+    },
+    "volleyball": {
+        "name": "Volleyball",
+        "leagues": [1],
+        "emoji": "🏐",
+        "api_base": "https://v1.volleyball.api-sports.io"
     }
 }
 
@@ -223,6 +265,15 @@ class MultiSportAPIClient:
         """Get live matches for all available sports"""
         result = {}
         
+        # Initialize all sports with 0
+        for sport_key, sport_info in SPORTS.items():
+            result[sport_key] = {
+                "name": sport_info["name"],
+                "emoji": sport_info["emoji"],
+                "count": 0,
+                "matches": []
+            }
+        
         # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
             # Basketball uses v1.basketball.api-sports.io
@@ -238,15 +289,5 @@ class MultiSportAPIClient:
                     "matches": data["response"]
                 }
                 print(f"✅ Got {len(data['response'])} basketball matches")
-        
-        # If no real data, show message
-        if not result:
-            result["message"] = {
-                "name": "No Live Matches",
-                "emoji": "😴",
-                "count": 0,
-                "matches": [],
-                "note": "No live matches right now (early morning). Try again later!"
-            }
         
         return result
