@@ -670,12 +670,9 @@
                 const matchDate = match.date ? new Date(match.date) : null;
                 
                 if (isLive) {
-                    // Show LIVE with start time in local timezone only
-                    let startTime = '';
-                    if (matchDate && !isNaN(matchDate.getTime())) {
-                        startTime = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'});
-                    }
-                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE · ${startTime}</div>`;
+                    // For live games, show current quarter/time, not start time
+                    const gameTime = match.status?.timer || match.status?.long || '';
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>${gameTime || 'LIVE'}</div>`;
                 } else if (status === 'FT') {
                     statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
                 } else if (status === 'NS' || status === 'Scheduled' || status === 'TBD') {
