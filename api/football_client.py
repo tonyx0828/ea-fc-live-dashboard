@@ -4,6 +4,8 @@ API-Football 客户端
 """
 import requests
 from typing import Optional, List, Dict, Any
+import random
+from datetime import datetime, timedelta
 from config import settings
 
 
@@ -21,8 +23,7 @@ class FootballAPIClient:
     
     def _request(self, endpoint: str, params: dict = None) -> dict:
         """发送 API 请求"""
-        if not self.api_key:
-            # 返回模拟数据（如果没有 API Key）
+        if not self.api_key or self.api_key == "demo_key":
             return self._mock_data(endpoint, params)
         
         url = f"{self.BASE_URL}{endpoint}"
@@ -31,15 +32,11 @@ class FootballAPIClient:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"❌ API Error: {response.status_code} - {response.text}")
+            print(f"❌ API Error: {response.status_code}")
             return self._mock_data(endpoint, params)
     
     def _mock_data(self, endpoint: str, params: dict = None) -> dict:
-        """返回模拟数据（开发/测试用）- 更真实的模拟"""
-        import random
-        from datetime import datetime, timedelta
-        
-        # 模拟更多比赛
+        """返回模拟数据"""
         leagues = [
             (39, "Premier League"),
             (140, "La Liga"),
@@ -61,16 +58,12 @@ class FootballAPIClient:
         live_statuses = ["1H", "2H", "HT"]
         live_matches = []
         
-        for i in range(8):  # 生成 8 场 Live 比赛
+        for i in range(8):
             league = random.choice(leagues)
             home, away = random.choice(teams)
             status = random.choice(live_statuses)
-            
-            # 随机比分
             home_goals = random.randint(0, 3)
             away_goals = random.randint(0, 2)
-            
-            # 随机时间
             base_time = datetime.now() - timedelta(minutes=random.randint(30, 80))
             
             match = {
@@ -85,41 +78,19 @@ class FootballAPIClient:
                     "season": 2024
                 },
                 "teams": {
-                    "home": {"name": home, "logo": f"https://logo.clearbit.com/{home.lower().replace(' ', '')}.com"},
-                    "away": {"name": away, "logo": f"https://logo.clearbit.com/{away.lower().replace(' ', '')}.com"}
+                    "home": {"name": home},
+                    "away": {"name": away}
                 },
                 "goals": {"home": home_goals, "away": away_goals},
-                "score": {
-                    "halftime": {"home": random.randint(0, 2), "away": random.randint(0, 1)}
-                }
+                "score": {"halftime": {"home": random.randint(0, 2), "away": random.randint(0, 1)}}
             }
             live_matches.append(match)
         
         return {"response": live_matches}
-        elif "statistics" in endpoint:
-            return {
-                "response": [
-                    {
-                        "team": {"name": "Manchester United"},
-                        "statistics": {
-                            "shots": 15,
-                            "shotsOnGoal": 8,
-                            "possession": 55,
-                            "passes": 450,
-                            "passAccuracy": 82,
-                            "fouls": 10,
-                            "corners": 6
-                        }
-                    }
-                ]
-            }
-        return {"response": []}
-    
-    # ============ 主要 API 方法 ============
     
     def get_live_matches(self) -> List[Dict[str, Any]]:
         """获取当前进行中的比赛"""
-        data = self._request("/fixtures/live", {"league": 39})  # Premier League
+        data = self._request("/fixtures/live", {"league": 39})
         return data.get("response", [])
     
     def get_match_stats(self, match_id: int) -> Dict[str, Any]:
@@ -134,13 +105,10 @@ class FootballAPIClient:
     
     def get_league_standings(self, league_id: int, season: int = 2024) -> Dict[str, Any]:
         """获取联赛积分榜"""
-        data = self._request(
-            "/standings",
-            {"league": league_id, "season": season}
-        )
+        data = self._request("/standings", {"league": league_id, "season": season})
         return data.get("response", [])
     
-    def get_team_stats(self, team_id: int) -> Dict[str, Any]]:
+    def get_team_stats(self, team_id: int) -> Dict[str, Any]:
         """获取球队统计"""
         data = self._request("/teams/statistics", {"team": team_id})
         return data.get("response", [])
