@@ -226,27 +226,17 @@ class MultiSportAPIClient:
         # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
             # Basketball uses v1.basketball.api-sports.io
-            # Try different endpoints - fix from API-Football AI
-            endpoints_to_try = [
-                ("/fixtures", {"league": 12, "live": "all"}),
-                ("/fixtures", {"live": "all"}),
-                ("/games", {"league": 12}),
-            ]
+            # Use /games without params - returns today's games
+            data = self._request("/games", {})
             
-            for endpoint, params in endpoints_to_try:
-                try:
-                    data = self._request(endpoint, params)
-                    if data.get("response") and len(data.get("response", [])) > 0:
-                        result["basketball"] = {
-                            "name": "Basketball",
-                            "emoji": "🏀",
-                            "count": len(data["response"]),
-                            "matches": data["response"]
-                        }
-                        print(f"✅ Got {len(data['response'])} matches from {endpoint}")
-                        break
-                except Exception as e:
-                    print(f"❌ {endpoint} error: {e}")
+            if data.get("response"):
+                result["basketball"] = {
+                    "name": "Basketball",
+                    "emoji": "🏀",
+                    "count": len(data["response"]),
+                    "matches": data["response"]
+                }
+                print(f"✅ Got {len(data['response'])} basketball matches")
         
         # If no real data, show message
         if not result:
