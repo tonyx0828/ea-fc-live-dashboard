@@ -169,6 +169,19 @@ async def compare_teams(team1_id: int, team2_id: int):
     }
 
 
+# ============ Debug Endpoints ============
+
+@router.get("/debug/key")
+async def debug_key():
+    """Debug: Check what API key is being used"""
+    key = settings.API_FOOTBALL_KEY
+    return {
+        "key_configured": bool(key and key != "demo_key"),
+        "key_value": key[:10] + "..." if key and len(key) > 10 else key,
+        "key_length": len(key) if key else 0
+    }
+
+
 # ============ Multi-Sport Endpoints ============
 
 @router.get("/sports/live")
