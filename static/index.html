@@ -636,6 +636,10 @@
                 // FIX: Handle API response format (teams.home.name, scores.home.total)
                 const homeTeam = match.teams?.home || match.home_team || {};
                 const awayTeam = match.teams?.away || match.away_team || {};
+                
+                // Determine status FIRST (before using it)
+                const status = match.status?.short || match.status || 'NS';
+                
                 // Only show score if game has started (not NS, not future)
                 const rawHomeScore = match.scores?.home?.total ?? match.home_score ?? null;
                 const rawAwayScore = match.scores?.away?.total ?? match.away_score ?? null;
@@ -644,9 +648,6 @@
                 const homeScore = showScore ? rawHomeScore : '-';
                 const awayScore = showScore ? rawAwayScore : '-';
                 const leagueName = match.league?.name || 'Match';
-                
-                // Determine if match is live or scheduled
-                const status = match.status?.short || match.status || 'NS';
                 // Only these are actually live games
                 const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET'].includes(status);
                 
