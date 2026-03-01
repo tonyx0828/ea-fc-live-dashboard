@@ -47,7 +47,7 @@ SPORTS = {
 class MultiSportAPIClient:
     """Multi-sport API client"""
     
-    # Different sports use different API endpoints
+    # Use basketball API (key works for this)
     BASE_URL = "https://v1.basketball.api-sports.io"
     
     def __init__(self, api_key: str = None):
@@ -226,20 +226,27 @@ class MultiSportAPIClient:
         # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
             # Basketball uses v1.basketball.api-sports.io
-            # Let's test basketball first
-            try:
-                # Use basketball endpoint
-                basketball_data = self._request("/basketball/games", {"league": 12})
-                if basketball_data.get("response"):
-                    result["basketball"] = {
-                        "name": "Basketball",
-                        "emoji": "🏀",
-                        "count": len(basketball_data["response"]),
-                        "matches": basketball_data["response"]
-                    }
-                    print(f"✅ Got {len(basketball_data['response'])} basketball matches")
-            except Exception as e:
-                print(f"❌ Basketball API error: {e}")
+            # Try different endpoints
+            endpoints_to_try = [
+                ("/fixtures/live", {"league": 12}),
+                ("/fixtures", {"league": 12}),
+                ("/livescore", {}),
+            ]
+            
+            for endpoint, params in endpoints_to_try:
+                try:
+                    data = self._request(endpoint, params)
+                    if data.get("response") and len(data.get("response", [])) > 0:
+                        result["basketball"] = {
+                            "name": "Basketball",
+                            "emoji": "🏀",
+                            "count": len(data["response"]),
+                            "matches": data["response"]
+                        }
+                        print(f"✅ Got {len(data['response'])} matches from {endpoint}")
+                        break
+                except Exception as e:
+                    print(f"❌ {endpoint} error: {e}")
         
         # If no real data, show message
         if not result:
@@ -248,7 +255,7 @@ class MultiSportAPIClient:
                 "emoji": "😴",
                 "count": 0,
                 "matches": [],
-                "note": "No live matches right now. Try again later!"
+                "note": "No live matches right now (early morning). Try again later!"
             }
         
         return result
