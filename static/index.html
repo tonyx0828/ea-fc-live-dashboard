@@ -452,6 +452,34 @@
             volleyball: '🏐'
         };
         
+        // League name to sport mapping
+        const LEAGUE_TO_SPORT = {
+            'nba': '🏀',
+            'ncaa': '🏀',
+            'ncaa women': '🏀',
+            'euroleague': '🏀',
+            'wnba': '🏀',
+            'premier league': '⚽',
+            'la liga': '⚽',
+            'bundesliga': '⚽',
+            'serie a': '⚽',
+            'ligue 1': '⚽',
+            'champions league': '⚽',
+            'world cup': '🏆',
+            'nfl': '🏈',
+            'nhl': '🏒',
+            'mlb': '⚾'
+        };
+        
+        function getSportEmojiFromLeague(leagueName) {
+            if (!leagueName) return '🏀';
+            const lower = leagueName.toLowerCase();
+            for (const [key, emoji] of Object.entries(LEAGUE_TO_SPORT)) {
+                if (lower.includes(key)) return emoji;
+            }
+            return '🏀'; // Default to basketball
+        }
+        
         // Global cache
         let allData = null;
         let currentSport = 'all';
@@ -527,7 +555,8 @@
             
             Object.entries(sports).forEach(([key, data]) => {
                 if (data.count > 0) {
-                    const emoji = getSportEmoji(key);
+                    // Use basketball emoji for basketball tab
+                    const emoji = key === 'basketball' ? '🏀' : getSportEmoji(key);
                     tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" 
                         onclick="switchSport('${key}')">
                         ${emoji} ${data.name} <span class="count">${data.count}</span>
@@ -626,20 +655,30 @@
                     timeDisplay = match.time;
                 }
                 
-                const emoji = getSportEmoji(match.sport || leagueName.toLowerCase());
+                // Use league-based emoji (more accurate)
+                const emoji = getSportEmojiFromLeague(leagueName);
+                
+                // Determine display status
+                let statusDisplay = '';
+                if (isLive) {
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE ${match.time || ''}</div>`;
+                } else if (status === 'FT') {
+                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
+                } else if (status === 'NS' || status === 'Scheduled') {
+                    // Show upcoming time
+                    const matchDate = new Date(match.date);
+                    const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'America/Vancouver'});
+                    const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
+                    statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${dateStr} ${timeStr}</div>`;
+                } else {
+                    statusDisplay = `<div class="match-time">${status}</div>`;
+                }
                 
                 return `
                     <div class="match-card" onclick="openMatchDetail('${match.sport || 'basketball'}', ${match.id})">
                         <div class="match-header">
                             <span class="league-badge">${emoji} ${leagueName}</span>
-                            ${isLive ? `
-                                <div class="live-indicator">
-                                    <span class="dot"></span>
-                                    LIVE ${match.time || ''}
-                                </div>
-                            ` : `
-                                <div class="match-time">${timeDisplay}</div>
-                            `}
+                            ${statusDisplay}
                         </div>
                         
                         <div class="teams-container">
