@@ -658,18 +658,25 @@
                 // Use league-based emoji (more accurate)
                 const emoji = getSportEmojiFromLeague(leagueName);
                 
-                // Determine display status
+                // Determine display status - use browser local time
                 let statusDisplay = '';
+                const matchDate = match.date ? new Date(match.date) : null;
+                
                 if (isLive || status === 'AOT') {
-                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE ${match.time || ''}</div>`;
+                    // Show LIVE with start time in local timezone
+                    const startTime = matchDate ? matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : match.time || '';
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE · ${startTime}</div>`;
                 } else if (status === 'FT') {
                     statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
                 } else if (status === 'NS' || status === 'Scheduled' || status === 'TBD') {
-                    // Show upcoming time
-                    const matchDate = new Date(match.date);
-                    const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'America/Vancouver'});
-                    const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
-                    statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${dateStr} ${timeStr}</div>`;
+                    // Show upcoming time in local timezone (browser auto-detects)
+                    if (matchDate) {
+                        const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
+                        statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${dateStr} ${timeStr}</div>`;
+                    } else {
+                        statusDisplay = `<div class="match-time">TBD</div>`;
+                    }
                 } else {
                     statusDisplay = `<div class="match-time">${status}</div>`;
                 }
