@@ -677,7 +677,7 @@
                     startTimeStr = `${dateStr} ${timeStr}`;
                 }
                 
-                if (isLive) {
+                if (isLive || status in ['Q1', 'Q2', 'Q3', 'Q4', 'HT', 'P1', 'P2', 'P3']) {
                     // For live games, show current quarter + start time
                     const gameTime = match.status?.timer || match.status?.long || '';
                     statusDisplay = `<div class="live-indicator"><span class="dot"></span>${gameTime || 'LIVE'}</div>
