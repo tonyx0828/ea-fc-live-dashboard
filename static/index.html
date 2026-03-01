@@ -381,6 +381,9 @@
     <div class="container">
         <header>
             <h1>🏆 Live Sports Dashboard</h1>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">
+                v2026.03.01.1051 | Build: <span id="build-time"></span>
+            </div>
             <div class="header-meta">
                 <div class="status-badge">
                     <span class="status-dot"></span>
@@ -794,7 +797,11 @@
         document.addEventListener('keypress', resetInactivityTimer);
         
         // Init
-        document.addEventListener('DOMContentLoaded', loadAllData);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set build timestamp
+            document.getElementById('build-time').textContent = new Date().toISOString();
+            loadAllData();
+        });
     </script>
 </body>
 </html>
