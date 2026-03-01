@@ -269,10 +269,11 @@
         // 直接用 REST API (更稳定)
         async function loadData() {
             const statusEl = document.getElementById('connection-status');
-            statusEl.textContent = 'Loading...';
+            const url = API_BASE + '/api/matches/live';
+            statusEl.textContent = 'Loading from ' + url + '...';
             
             try {
-                const response = await fetch(API_BASE + '/api/matches/live');
+                const response = await fetch(url);
                 const result = await response.json();
                 
                 if (result.matches && result.matches.length > 0) {
