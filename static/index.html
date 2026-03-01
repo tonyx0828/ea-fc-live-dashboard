@@ -266,27 +266,27 @@
     <script>
         const API_BASE = window.location.origin;
         
-        // 直接用 REST API (更稳定)
+        // 直接用 REST API
         async function loadData() {
             const statusEl = document.getElementById('connection-status');
-            const url = API_BASE + '/api/matches/live';
-            statusEl.textContent = 'Loading from ' + url + '...';
+            const container = document.getElementById('matches-container');
+            statusEl.textContent = 'Loading...';
             
             try {
-                const response = await fetch(url);
+                const response = await fetch('/api/matches/live');
                 const result = await response.json();
                 
                 if (result.matches && result.matches.length > 0) {
                     displayMatches(result.matches);
                     updateStats(result);
-                    document.getElementById('connection-status').textContent = '🟢 Live';
+                    statusEl.textContent = '🟢 Live';
                 } else {
-                    document.getElementById('matches-container').innerHTML = '<div class="no-matches">No matches</div>';
+                    container.innerHTML = '<div class="no-matches">No matches</div>';
                     document.getElementById('match-count').textContent = '0';
                 }
             } catch (e) {
                 console.error('Error:', e);
-                showError('Failed to load data');
+                container.innerHTML = '<div class="error">Error: ' + e.message + '</div>';
                 statusEl.textContent = '🔴 Error';
             }
         }
