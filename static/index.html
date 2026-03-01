@@ -660,11 +660,15 @@
                 
                 // Determine display status - use browser local time
                 let statusDisplay = '';
+                // Parse the ISO date string properly (contains timezone offset)
                 const matchDate = match.date ? new Date(match.date) : null;
                 
                 if (isLive || status === 'AOT') {
-                    // Show LIVE with start time in local timezone
-                    const startTime = matchDate ? matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : match.time || '';
+                    // Show LIVE with start time in local timezone only
+                    let startTime = '';
+                    if (matchDate && !isNaN(matchDate.getTime())) {
+                        startTime = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'});
+                    }
                     statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE · ${startTime}</div>`;
                 } else if (status === 'FT') {
                     statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
