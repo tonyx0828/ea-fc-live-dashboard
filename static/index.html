@@ -642,7 +642,8 @@
                 
                 // Determine if match is live or scheduled
                 const status = match.status?.short || match.status || 'NS';
-                const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET', 'FT', 'AOT'].includes(status);
+                // Only these are actually live games
+                const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET'].includes(status);
                 
                 // Get start time
                 let timeDisplay = '';
@@ -663,7 +664,7 @@
                 // Parse the ISO date string properly (contains timezone offset)
                 const matchDate = match.date ? new Date(match.date) : null;
                 
-                if (isLive || status === 'AOT') {
+                if (isLive) {
                     // Show LIVE with start time in local timezone only
                     let startTime = '';
                     if (matchDate && !isNaN(matchDate.getTime())) {
