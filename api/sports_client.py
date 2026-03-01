@@ -264,30 +264,76 @@ class MultiSportAPIClient:
     def get_all_live_matches(self) -> Dict[str, List]:
         """Get live matches for all available sports"""
         result = {}
-        
-        # Initialize all sports with 0
-        for sport_key, sport_info in SPORTS.items():
-            result[sport_key] = {
-                "name": sport_info["name"],
-                "emoji": sport_info["emoji"],
-                "count": 0,
-                "matches": []
-            }
+        today = datetime.now().strftime("%Y-%m-%d")
         
         # Only try if we have a valid API key
-        if self.api_key and self.api_key != "demo_key":
-            # Basketball uses v1.basketball.api-sports.io
-            # Use /games with today's date
-            today = datetime.now().strftime("%Y-%m-%d")
-            data = self._request("/games", {"date": today})
-            
-            if data.get("response"):
-                result["basketball"] = {
-                    "name": "Basketball",
-                    "emoji": "🏀",
-                    "count": len(data["response"]),
-                    "matches": data["response"]
+        if not self.api_key or self.api_key == "demo_key":
+            # Return empty sports list for demo mode
+            for sport_key, sport_info in SPORTS.items():
+                result[sport_key] = {
+                    "name": sport_info["name"],
+                    "emoji": sport_info["emoji"],
+                    "count": 0,
+                    "matches": []
                 }
-                print(f"✅ Got {len(data['response'])} basketball matches")
+            return result
+        
+        # Fetch data for each sport
+        for sport_key, sport_info in SPORTS.items():
+            try:
+                base_url = sport_info.get("api_base", "https://v1.basketball.api-sports.io")
+                
+                # Determine endpoint and params based on sport
+                if sport_key in ["basketball", "nba"]:
+                    # Basketball uses /games endpoint
+                    url = f"{base_url}/games"
+                    params = {"date": today}
+                elif sport_key in ["football"]:
+                    # Football uses /fixtures endpoint
+                    url = f"{base_url}/fixtures"
+                    params = {"date": today, "status": "LIVE"}
+                elif sport_key in ["nfl", "afl", "hockey", "baseball", "formula1", "handball", "mma", "rugby", "volleyball"]:
+                    # Other sports - try fixtures
+                    url = f"{base_url}/games"
+                    params = {"date": today}
+                else:
+                    url = f"{base_url}/games"
+                    params = {"date": today}
+                
+                # Make API request
+                headers = {"x-apisports-key": self.api_key}
+                response = requests.get(url, headers=headers, params=params, timeout=10)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    matches = data.get("response", [])
+                    
+                    # Add sport field to each match
+                    for match in matches:
+                        match["sport"] = sport_key
+                    
+                    result[sport_key] = {
+                        "name": sport_info["name"],
+                        "emoji": sport_info["emoji"],
+                        "count": len(matches),
+                        "matches": matches
+                    }
+                    print(f"✅ {sport_key}: {len(matches)} matches")
+                else:
+                    result[sport_key] = {
+                        "name": sport_info["name"],
+                        "emoji": sport_info["emoji"],
+                        "count": 0,
+                        "matches": []
+                    }
+                    
+            except Exception as e:
+                print(f"❌ {sport_key}: Error - {e}")
+                result[sport_key] = {
+                    "name": sport_info["name"],
+                    "emoji": sport_info["emoji"],
+                    "count": 0,
+                    "matches": []
+                }
         
         return result
