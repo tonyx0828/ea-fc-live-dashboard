@@ -226,8 +226,9 @@ class MultiSportAPIClient:
         # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
             # Basketball uses v1.basketball.api-sports.io
-            # Use /games without params - returns today's games
-            data = self._request("/games", {})
+            # Use /games with today's date
+            today = datetime.now().strftime("%Y-%m-%d")
+            data = self._request("/games", {"date": today})
             
             if data.get("response"):
                 result["basketball"] = {
