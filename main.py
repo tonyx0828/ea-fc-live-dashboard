@@ -67,9 +67,9 @@ async def root():
         return FileResponse(index_path)
     return {
         "status": "ok",
-        "message": "⚽ EA FC Live Dashboard 高级版运行中",
+        "message": "EA FC Live Dashboard Running",
         "docs": "/docs",
-        "frontend": "打开 / 查看前端页面",
+        "frontend": "Open / to view frontend",
         "features": [
             "REST API",
             "WebSocket 实时推送",
@@ -325,7 +325,7 @@ async def websocket_live_v2(websocket: WebSocket):
             else:
                 await websocket.send_json({
                     "type": "no_matches",
-                    "message": "当前没有Live比赛",
+                    "message": "No live matches right now",
                     "timestamp": datetime.now().isoformat()
                 })
             
