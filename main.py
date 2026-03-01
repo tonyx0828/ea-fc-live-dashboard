@@ -6,6 +6,9 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 from typing import Optional, List
 import json
 from datetime import datetime
@@ -43,6 +46,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 静态文件服务 (前端)
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # 全局组件
 football_client = FootballAPIClient(settings.API_FOOTBALL_KEY)
 match_analyzer = MatchAnalyzer()
@@ -54,10 +61,15 @@ ws_manager = ConnectionManager()
 
 @app.get("/")
 async def root():
+    # 优先返回前端页面
+    index_path = os.path.join(os.path.dirname(__file__), "templates", "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
     return {
         "status": "ok",
         "message": "⚽ EA FC Live Dashboard 高级版运行中",
         "docs": "/docs",
+        "frontend": "打开 / 查看前端页面",
         "features": [
             "REST API",
             "WebSocket 实时推送",
