@@ -678,20 +678,30 @@
                 
                 // Format start time in local timezone - use explicit parsing
                 let startTimeStr = '';
-                if (match.date) {
-                    // Parse ISO string: 2026-03-01T20:30:00+00:00
-                    const [datePart, timePart] = match.date.split('T');
-                    const [year, month, day] = datePart.split('-').map(Number);
-                    const [time, timezone] = timePart.split('+');
-                    const [hours, minutes] = time.split(':').map(Number);
-                    
-                    // Create date in local timezone
-                    const localDate = new Date(year, month - 1, day, hours, minutes);
-                    
-                    // Format to local timezone
-                    const localTimeStr = localDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
-                    const localDateStr = localDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
-                    startTimeStr = `${localDateStr} ${localTimeStr}`;
+                try {
+                    if (match.date && typeof match.date === 'string' && match.date.includes('T')) {
+                        // Parse ISO string: 2026-03-01T20:30:00+00:00
+                        const [datePart, timePart] = match.date.split('T');
+                        const [year, month, day] = datePart.split('-').map(Number);
+                        const [time, timezone] = timePart.split('+');
+                        const [hours, minutes] = time.split(':').map(Number);
+                        
+                        // Create date in local timezone
+                        const localDate = new Date(year, month - 1, day, hours, minutes);
+                        
+                        // Format to local timezone
+                        const localTimeStr = localDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
+                        const localDateStr = localDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+                        startTimeStr = `${localDateStr} ${localTimeStr}`;
+                    } else if (match.date) {
+                        // Fallback: try direct parsing
+                        const d = new Date(match.date);
+                        if (!isNaN(d.getTime())) {
+                            startTimeStr = d.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
+                        }
+                    }
+                } catch (e) {
+                    console.log('Date parse error:', e);
                 }
                 
                 // Simple: just show start time for all games
