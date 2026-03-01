@@ -61,6 +61,7 @@ async def get_live_matches(
     for match in matches:
         formatted.append({
             "id": match.get("fixture", {}).get("id"),
+            "league_name": match.get("league", {}).get("name", "Premier League"),
             "home_team": match.get("teams", {}).get("home", {}).get("name"),
             "away_team": match.get("teams", {}).get("away", {}).get("name"),
             "home_score": match.get("goals", {}).get("home", 0),
