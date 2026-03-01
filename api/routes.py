@@ -1,0 +1,152 @@
+"""
+REST API 路由
+"""
+from typing import Optional
+from fastapi import APIRouter, Query, HTTPException
+from pydantic import BaseModel
+
+from api.football_client import FootballAPIClient
+from processing.polars_processor import MatchAnalyzer
+from config import settings
+
+
+router = APIRouter()
+
+# 初始化组件
+football_client = FootballAPIClient(settings.API_FOOTBALL_KEY)
+match_analyzer = MatchAnalyzer()
+
+
+# ============ 响应模型 ============
+
+class MatchResponse(BaseModel):
+    id: int
+    home_team: str
+    away_team: str
+    home_score: int
+    away_score: int
+    status: str
+
+
+class StatsResponse(BaseModel):
+    match_id: int
+    analysis: dict
+
+
+# ============ 路由 ============
+
+@router.get("/leagues")
+async def get_leagues():
+    """
+    获取可用联赛列表
+    """
+    leagues = football_client.get_leagues()
+    return {
+        "count": len(leagues),
+        "data": leagues[:10]  # 返回前10个
+    }
+
+
+@router.get("/matches/live")
+async def get_live_matches(
+    league: Optional[int] = Query(None, description="联赛ID")
+):
+    """
+    获取当前进行中的比赛
+    """
+    matches = football_client.get_live_matches()
+    
+    # 用 Polars 格式化数据
+    formatted = []
+    for match in matches:
+        formatted.append({
+            "id": match.get("fixture", {}).get("id"),
+            "home_team": match.get("teams", {}).get("home", {}).get("name"),
+            "away_team": match.get("teams", {}).get("away", {}).get("name"),
+            "home_score": match.get("goals", {}).get("home", 0),
+            "away_score": match.get("goals", {}).get("away", 0),
+            "status": match.get("fixture", {}).get("status", {}).get("short"),
+            "time": match.get("fixture", {}).get("date")
+        })
+    
+    return {
+        "count": len(formatted),
+        "matches": formatted
+    }
+
+
+@router.get("/matches/{match_id}")
+async def get_match(match_id: int):
+    """
+    获取特定比赛详情
+    """
+    # 这里简化处理，实际应该调用专门的 API
+    matches = football_client.get_live_matches()
+    
+    for match in matches:
+        if match.get("fixture", {}).get("id") == match_id:
+            return match
+    
+    raise HTTPException(status_code=404, detail="Match not found")
+
+
+@router.get("/stats/{match_id}")
+async def get_match_stats(match_id: int):
+    """
+    获取比赛统计数据 (Polars 处理)
+    """
+    stats = football_client.get_match_stats(match_id)
+    
+    if not stats:
+        raise HTTPException(status_code=404, detail="Stats not found")
+    
+    # 用 Polars 分析
+    analysis = match_analyzer.analyze_match_stats(stats)
+    
+    return {
+        "match_id": match_id,
+        "raw_stats": stats,
+        "analysis": analysis
+    }
+
+
+@router.get("/predictions/{match_id}")
+async def get_predictions(match_id: int):
+    """
+    比赛预测 (Polars 数据分析)
+    """
+    stats = football_client.get_match_stats(match_id)
+    
+    if not stats:
+        raise HTTPException(status_code=404, detail="Match not found")
+    
+    # 用 Polars 做预测分析
+    prediction = match_analyzer.predict_outcome(stats)
+    
+    return {
+        "match_id": match_id,
+        "prediction": prediction,
+        "model": "polars_analysis_v1"
+    }
+
+
+@router.get("/compare/{team1_id}/{team2_id}")
+async def compare_teams(team1_id: int, team2_id: int):
+    """
+    对比两队历史战绩 (Polars 聚合分析)
+    """
+    # 获取两队统计
+    team1_stats = football_client.get_team_stats(team1_id)
+    team2_stats = football_client.get_team_stats(team2_id)
+    
+    if not team1_stats or not team2_stats:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # 用 Polars 对比分析
+    comparison = match_analyzer.compare_teams([team1_stats, team2_stats])
+    
+    return {
+        "team1": team1_stats.get("team", {}).get("name"),
+        "team2": team2_stats.get("team", {}).get("name"),
+        "comparison": comparison
+    }

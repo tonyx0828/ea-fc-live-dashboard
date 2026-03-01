@@ -1,0 +1,25 @@
+# EA FC Live Dashboard - Dependencies
+
+# FastAPI
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# WebSocket
+websockets==12.0
+
+# HTTP Client
+requests==2.31.0
+
+# Polars (核心依赖)
+polars==0.20.3
+
+# 可选：Pandas 对比
+# pandas==2.2.0
+
+# Docker
+# docker-compose
+
+# 环境变量
+python-dotenv==1.0.0
