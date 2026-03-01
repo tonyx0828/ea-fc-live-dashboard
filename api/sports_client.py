@@ -222,20 +222,28 @@ class MultiSportAPIClient:
         """Get live matches for all available sports"""
         result = {}
         
-        # First try to get real data from API
+        # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
-            try:
-                # Try football first (most reliable)
-                football_data = self._request("/fixtures/live", {"league": 39})
-                if football_data.get("response"):
-                    result["football"] = {
-                        "name": "Football",
-                        "emoji": "⚽",
-                        "count": len(football_data["response"]),
-                        "matches": football_data["response"]
-                    }
-            except Exception as e:
-                print(f"API error: {e}")
+            # Define sports to try
+            sports_to_try = [
+                ("football", "⚽", 39, "/fixtures/live"),
+                ("basketball", "🏀", 12, "/basketball/games"),
+                ("nba", "🏀", 12, "/basketball/games"),
+            ]
+            
+            for sport_key, emoji, league_id, endpoint in sports_to_try:
+                try:
+                    data = self._request(endpoint, {"league": league_id})
+                    if data.get("response"):
+                        result[sport_key] = {
+                            "name": "Basketball" if sport_key in ["basketball", "nba"] else "Football",
+                            "emoji": emoji,
+                            "count": len(data["response"]),
+                            "matches": data["response"]
+                        }
+                        print(f"✅ Got {len(data['response'])} {sport_key} matches")
+                except Exception as e:
+                    print(f"❌ {sport_key} API error: {e}")
         
         # If no real data, show message
         if not result:
