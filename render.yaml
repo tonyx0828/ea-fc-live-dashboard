@@ -1,5 +1,4 @@
 # render.yaml - Render 部署配置
-# 放到项目根目录
 
 services:
   - type: web
@@ -7,11 +6,6 @@ services:
     env: docker
     region: oregon
     buildCommand: docker build -t ea-fc-live .
-    startCommand: docker run -p 10000:8000 ea-fc-live
-    envVars:
-      - key: API_FOOTBALL_KEY
-        sync: false
-      - key: DEBUG
-        value: "false"
-    ports:
-      - 10000
+    startCommand: docker run -p 8000:8000 ea-fc-live
+    healthCheckPath: /
+    healthCheckMethod: GET
