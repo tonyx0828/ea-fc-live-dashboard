@@ -10,34 +10,35 @@ from config import settings
 
 
 # Sport configurations - only working sports
+# Use /games endpoint (confirmed working)
 SPORTS_CONFIG = {
     "basketball": {
         "name": "Basketball",
-        "base_url": "https://v2.nba.api-sports.io",
+        "base_url": "https://v1.basketball.api-sports.io",
         "emoji": "🏀",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
+        "endpoint": "/games",
+        "params": {}
     },
     "nfl": {
         "name": "NFL",
         "base_url": "https://v1.american-football.api-sports.io",
         "emoji": "🏈",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
+        "endpoint": "/games",
+        "params": {}
     },
     "hockey": {
         "name": "Hockey",
         "base_url": "https://v1.hockey.api-sports.io",
         "emoji": "🏒",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
+        "endpoint": "/games",
+        "params": {}
     },
     "baseball": {
         "name": "Baseball",
         "base_url": "https://v1.baseball.api-sports.io",
         "emoji": "⚾",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
+        "endpoint": "/games",
+        "params": {}
     }
 }
 
