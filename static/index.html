@@ -664,28 +664,30 @@
                 // Use league-based emoji (more accurate)
                 const emoji = getSportEmojiFromLeague(leagueName);
                 
-                // Determine display status - use browser local time
+                // Determine display status - always show start time
                 let statusDisplay = '';
                 // Parse the ISO date string properly (contains timezone offset)
                 const matchDate = match.date ? new Date(match.date) : null;
                 
+                // Format start time in local timezone
+                let startTimeStr = '';
+                if (matchDate && !isNaN(matchDate.getTime())) {
+                    const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
+                    startTimeStr = `${dateStr} ${timeStr}`;
+                }
+                
                 if (isLive) {
-                    // For live games, show current quarter/time, not start time
+                    // For live games, show current quarter + start time
                     const gameTime = match.status?.timer || match.status?.long || '';
-                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>${gameTime || 'LIVE'}</div>`;
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>${gameTime || 'LIVE'}</div>
+                        <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">Started: ${startTimeStr}</div>`;
                 } else if (status === 'FT') {
-                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
-                } else if (status === 'NS' || status === 'Scheduled' || status === 'TBD') {
-                    // Show upcoming time in local timezone (browser auto-detects)
-                    if (matchDate) {
-                        const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
-                        statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${dateStr} ${timeStr}</div>`;
-                    } else {
-                        statusDisplay = `<div class="match-time">TBD</div>`;
-                    }
+                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>
+                        <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">${startTimeStr}</div>`;
                 } else {
-                    statusDisplay = `<div class="match-time">${status}</div>`;
+                    // Upcoming games - show start time prominently
+                    statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${startTimeStr || 'TBD'}</div>`;
                 }
                 
                 return `
