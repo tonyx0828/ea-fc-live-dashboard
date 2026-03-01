@@ -59,14 +59,28 @@ async def get_live_matches(
     # 用 Polars 格式化数据
     formatted = []
     for match in matches:
+        home = match.get("teams", {}).get("home", {})
+        away = match.get("teams", {}).get("away", {})
+        venue = match.get("fixture", {}).get("venue", {})
+        status = match.get("fixture", {}).get("status", {})
+        
         formatted.append({
             "id": match.get("fixture", {}).get("id"),
             "league_name": match.get("league", {}).get("name", "Premier League"),
-            "home_team": match.get("teams", {}).get("home", {}).get("name"),
-            "away_team": match.get("teams", {}).get("away", {}).get("name"),
+            "league_country": match.get("league", {}).get("country", "England"),
+            "home_team": home.get("name", "TBD"),
+            "home_city": home.get("city", ""),
+            "home_stadium": home.get("stadium", ""),
+            "away_team": away.get("name", "TBD"),
+            "away_city": away.get("city", ""),
+            "away_stadium": away.get("stadium", ""),
+            "venue": venue.get("name", ""),
+            "venue_city": venue.get("city", ""),
             "home_score": match.get("goals", {}).get("home", 0),
             "away_score": match.get("goals", {}).get("away", 0),
-            "status": match.get("fixture", {}).get("status", {}).get("short"),
+            "status": status.get("short", "NS"),
+            "status_long": status.get("long", "Not Started"),
+            "elapsed": status.get("elapsed", 0),
             "time": match.get("fixture", {}).get("date")
         })
     
