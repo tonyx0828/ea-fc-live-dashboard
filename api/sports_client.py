@@ -9,17 +9,10 @@ from datetime import datetime, timedelta
 from config import settings
 
 
-# Sport configurations - all sports use /fixtures?live=all
+# Sport configurations - only working sports
 SPORTS_CONFIG = {
     "basketball": {
         "name": "Basketball",
-        "base_url": "https://v1.basketball.api-sports.io",
-        "emoji": "🏀",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "nba": {
-        "name": "NBA",
         "base_url": "https://v2.nba.api-sports.io",
         "emoji": "🏀",
         "endpoint": "/fixtures",
@@ -43,41 +36,6 @@ SPORTS_CONFIG = {
         "name": "Baseball",
         "base_url": "https://v1.baseball.api-sports.io",
         "emoji": "⚾",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "rugby": {
-        "name": "Rugby",
-        "base_url": "https://v1.rugby.api-sports.io",
-        "emoji": "🏉",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "volleyball": {
-        "name": "Volleyball",
-        "base_url": "https://v1.volleyball.api-sports.io",
-        "emoji": "🏐",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "handball": {
-        "name": "Handball",
-        "base_url": "https://v1.handball.api-sports.io",
-        "emoji": "🤾",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "mma": {
-        "name": "MMA",
-        "base_url": "https://v1.mma.api-sports.io",
-        "emoji": "🥊",
-        "endpoint": "/fixtures",
-        "params": {"live": "all"}
-    },
-    "formula1": {
-        "name": "Formula 1",
-        "base_url": "https://v1.formula-1.api-sports.io",
-        "emoji": "🏎️",
         "endpoint": "/fixtures",
         "params": {"live": "all"}
     }
