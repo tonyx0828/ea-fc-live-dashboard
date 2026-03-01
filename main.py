@@ -326,6 +326,56 @@ async def websocket_live_v2(websocket: WebSocket):
         ws_manager.disconnect(websocket)
 
 
+# ============ Match Chat WebSocket ============
+
+@app.websocket("/ws/match/{match_id}")
+async def websocket_match_chat(websocket: WebSocket, match_id: int):
+    """
+    WebSocket for match detail view - live chat
+    """
+    await ws_manager.connect(websocket)
+    
+    try:
+        await websocket.send_json({
+            "type": "connected",
+            "match_id": match_id,
+            "message": "Connected to match chat"
+        })
+        
+        # Send welcome message
+        import random
+        welcome_messages = [
+            "🏟️ Welcome to the match chat!",
+            "⚽ Enjoy the game!",
+            "🔥 Let's gooo!",
+            "🎉 Great match today!"
+        ]
+        await websocket.send_json({
+            "type": "chat",
+            "message": random.choice(welcome_messages)
+        })
+        
+        while True:
+            data = await websocket.receive_text()
+            
+            try:
+                import json
+                msg_data = json.loads(data)
+                
+                if msg_data.get("type") == "chat":
+                    # Broadcast to all viewers (simplified)
+                    await websocket.send_json({
+                        "type": "chat",
+                        "message": msg_data.get("message", "")
+                    })
+                    
+            except:
+                pass
+                
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+
+
 # ============ 启动 ============
 
 if __name__ == "__main__":

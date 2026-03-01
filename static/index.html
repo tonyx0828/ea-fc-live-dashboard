@@ -43,10 +43,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         /* Header */
-        header {
-            text-align: center;
-            padding: 40px 20px;
-        }
+        header { text-align: center; padding: 40px 20px; }
         
         h1 {
             font-size: 2rem;
@@ -84,10 +81,7 @@
             animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         /* Sport Tabs */
         .sport-tabs {
@@ -99,28 +93,33 @@
         }
         
         .sport-tab {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 25px;
+            border-radius: 30px;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .sport-tab:hover, .sport-tab.active {
-            background: var(--accent);
-            color: var(--bg-primary);
-            border-color: var(--accent);
+        .sport-tab:hover { background: var(--bg-card-hover); }
+        
+        .sport-tab.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
         }
         
         .sport-tab .count {
             background: rgba(0,0,0,0.3);
-            padding: 2px 8px;
-            border-radius: 10px;
+            padding: 2px 10px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            margin-left: 5px;
         }
         
         /* Stats */
@@ -137,19 +136,13 @@
             border-radius: 16px;
             padding: 20px;
             text-align: center;
+            transition: all 0.3s;
         }
         
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--accent); }
         
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
         
         /* Matches */
         .matches-grid { display: grid; gap: 20px; }
@@ -159,12 +152,14 @@
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 25px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .match-card:hover {
             background: var(--bg-card-hover);
-            transform: scale(1.01);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.15);
         }
         
         .match-header {
@@ -177,10 +172,10 @@
         }
         
         .league-badge {
-            padding: 5px 12px;
+            padding: 6px 14px;
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(0, 212, 255, 0.2));
-            border-radius: 8px;
-            font-size: 0.75rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
         
@@ -212,55 +207,29 @@
             gap: 20px;
         }
         
-        .team {
-            flex: 1;
-            text-align: center;
-        }
+        .team { flex: 1; text-align: center; }
         
         .team-logo {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: var(--bg-secondary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 12px;
-            font-size: 1.5rem;
+            font-size: 2rem;
         }
         
-        .team-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
+        .team-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+        .team-venue { font-size: 0.75rem; color: var(--text-muted); }
         
-        .team-venue {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        .score-container { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         
-        .score-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .score {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-        
-        .score-value { min-width: 50px; text-align: center; }
+        .score { display: flex; align-items: center; gap: 20px; font-size: 2.5rem; font-weight: 700; }
+        .score-value { min-width: 60px; text-align: center; }
         .score-divider { color: var(--text-muted); }
-        
-        .score-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
+        .score-label { font-size: 0.7rem; color: var(--text-muted); text-align: center; }
         
         /* Loading/Error */
         .loading, .no-matches, .error {
@@ -270,8 +239,8 @@
         }
         
         .loading-spinner {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: 3px solid var(--border-color);
             border-top-color: var(--accent);
             border-radius: 50%;
@@ -300,7 +269,98 @@
             transition: all 0.3s;
         }
         
-        .refresh-btn:hover { transform: rotate(180deg); }
+        .refresh-btn:hover { transform: rotate(180deg) scale(1.1); }
+        .refresh-btn.refreshing { animation: spin 1s linear infinite; }
+        
+        /* Match Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .ws-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+        
+        .ws-status.disconnected { background: rgba(255, 0, 0, 0.1); }
+        
+        .chat-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .chat-message {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .chat-input button {
+            padding: 12px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
         
         .footer {
             text-align: center;
@@ -340,12 +400,12 @@
                 <div class="stat-label">Live Matches</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="total-score">-</div>
-                <div class="stat-label">Total Score</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-value" id="sports-count">-</div>
                 <div class="stat-label">Sports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-score">-</div>
+                <div class="stat-label">Avg Score</div>
             </div>
         </div>
         
@@ -363,117 +423,184 @@
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="loadData()" title="Refresh">🔄</button>
+    <!-- Match Detail Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshAll()" title="Refresh">🔄</button>
     
     <script>
-        const SPORTS = {
-            all: { emoji: '🏆', name: 'All Sports' },
-            football: { emoji: '⚽', name: 'Football' },
-            nba: { emoji: '🏀', name: 'NBA' },
-            nfl: { emoji: '🏈', name: 'NFL' },
-            hockey: { emoji: '🏒', name: 'Hockey' }
+        // Sport emoji mapping
+        const SPORT_EMOJI = {
+            football: '⚽',
+            basketball: '🏀',
+            nba: '🏀',
+            'american-football': '🏈',
+            nfl: '🏈',
+            hockey: '🏒',
+            baseball: '⚾'
         };
         
+        // Global cache
+        let allData = null;
         let currentSport = 'all';
+        let ws = null;
+        let wsTimeout = null;
         
-        async function loadData() {
+        // Get sport emoji
+        function getSportEmoji(sport) {
+            return SPORT_EMOJI[sport] || '⚽';
+        }
+        
+        // Load all data once
+        async function loadAllData() {
             const statusEl = document.getElementById('connection-status');
-            const container = document.getElementById('matches-container');
-            
             statusEl.textContent = 'Loading...';
             
             try {
                 const response = await fetch('/api/sports/live');
                 const result = await response.json();
                 
+                // Cache all data
+                allData = result;
+                
                 // Render tabs
-                renderTabs(result.sports || {});
+                renderTabs();
                 
-                // Filter by current sport
-                let matches = [];
-                if (currentSport === 'all') {
-                    // Get all matches from all sports
-                    Object.values(result.sports || {}).forEach(sport => {
-                        matches = matches.concat(sport.matches || []);
-                    });
-                } else if (result.sports && result.sports[currentSport]) {
-                    matches = result.sports[currentSport].matches || [];
-                }
+                // Display matches (filtered on client side)
+                displayMatches();
                 
-                if (matches.length > 0) {
-                    displayMatches(matches);
-                    statusEl.textContent = '🟢 Live';
-                } else {
-                    container.innerHTML = `
-                        <div class="no-matches">
-                            <div style="font-size: 4rem; margin-bottom: 20px;">😴</div>
-                            <p>No live matches right now</p>
-                            <p style="font-size: 0.85rem; margin-top: 10px;">Check back later for live sports</p>
-                        </div>
-                    `;
-                    document.getElementById('match-count').textContent = '0';
-                }
-                
-                // Update stats
-                document.getElementById('match-count').textContent = result.total_matches || 0;
-                document.getElementById('sports-count').textContent = Object.keys(result.sports || {}).length;
+                statusEl.textContent = '🟢 Live';
                 
             } catch (e) {
                 console.error('Error:', e);
-                container.innerHTML = `<div class="error">Error: ${e.message}</div>`;
+                document.getElementById('matches-container').innerHTML = 
+                    `<div class="error">Error: ${e.message}</div>`;
                 statusEl.textContent = '🔴 Error';
             }
             
-            document.getElementById('last-update').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+            document.getElementById('last-update').textContent = 
+                'Updated: ' + new Date().toLocaleTimeString();
         }
         
-        function renderTabs(sportsData) {
+        // Render sport tabs
+        function renderTabs() {
+            if (!allData || !allData.sports) return;
+            
             const tabsEl = document.getElementById('sport-tabs');
-            let tabs = `<button class="sport-tab ${currentSport === 'all' ? 'active' : ''}" onclick="switchSport('all')">
-                🏆 All <span class="count">${Object.values(sportsData).reduce((a, s) => a + (s.count || 0), 0)}</span>
+            const sports = allData.sports;
+            
+            // Calculate total matches
+            let totalMatches = 0;
+            Object.values(sports).forEach(s => {
+                if (s.count) totalMatches += s.count;
+            });
+            
+            let tabs = `<button class="sport-tab ${currentSport === 'all' ? 'active' : ''}" 
+                onclick="switchSport('all')">
+                🏆 All <span class="count">${totalMatches}</span>
             </button>`;
             
-            Object.entries(sportsData).forEach(([key, data]) => {
-                tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" onclick="switchSport('${key}')">
-                    ${data.emoji} ${data.name} <span class="count">${data.count || 0}</span>
-                </button>`;
+            Object.entries(sports).forEach(([key, data]) => {
+                if (data.count > 0) {
+                    const emoji = getSportEmoji(key);
+                    tabs += `<button class="sport-tab ${currentSport === key ? 'active' : ''}" 
+                        onclick="switchSport('${key}')">
+                        ${emoji} ${data.name} <span class="count">${data.count}</span>
+                    </button>`;
+                }
             });
             
             tabsEl.innerHTML = tabs;
         }
         
+        // Switch sport (client-side filter, no API call)
         function switchSport(sport) {
             currentSport = sport;
-            loadData();
+            
+            // Update tab UI
+            document.querySelectorAll('.sport-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.sport-tab')?.classList.add('active');
+            
+            // Filter on client side
+            displayMatches();
         }
         
-        function displayMatches(matches) {
+        // Display matches (filtered)
+        function displayMatches() {
             const container = document.getElementById('matches-container');
             
+            if (!allData || !allData.sports) {
+                container.innerHTML = '<div class="no-matches">No data available</div>';
+                return;
+            }
+            
+            // Collect matches based on current filter
+            let matches = [];
+            
+            if (currentSport === 'all') {
+                Object.values(allData.sports).forEach(sport => {
+                    if (sport.matches) {
+                        matches = matches.concat(sport.matches);
+                    }
+                });
+            } else if (allData.sports[currentSport]) {
+                matches = allData.sports[currentSport].matches || [];
+            }
+            
+            if (matches.length === 0) {
+                container.innerHTML = `
+                    <div class="no-matches">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">😴</div>
+                        <p>No live matches right now</p>
+                        <p style="font-size: 0.85rem; margin-top: 10px;">Check back later for live sports</p>
+                    </div>
+                `;
+                document.getElementById('match-count').textContent = '0';
+                return;
+            }
+            
+            // Update stats
+            document.getElementById('match-count').textContent = matches.length;
+            
+            const sportsCount = Object.values(allData.sports).filter(s => s.count > 0).length;
+            document.getElementById('sports-count').textContent = sportsCount;
+            
+            // Calculate avg score
+            let totalScore = 0;
+            matches.forEach(m => {
+                totalScore += (m.home_score || 0) + (m.away_score || 0);
+            });
+            document.getElementById('avg-score').textContent = 
+                matches.length ? (totalScore / matches.length).toFixed(1) : '0';
+            
+            // Render matches
             container.innerHTML = matches.map(match => {
                 const isLive = !['FT', 'NS', 'POST'].includes(match.status);
                 const statusText = match.time ? `${match.time}'` : match.status;
-                
-                // Get sport emoji
-                const sportEmoji = match.sport === 'basketball' || match.sport === 'nba' ? '🏀' :
-                                   match.sport === 'american-football' || match.sport === 'nfl' ? '🏈' :
-                                   match.sport === 'hockey' ? '🏒' : '⚽';
+                const emoji = getSportEmoji(match.sport);
                 
                 return `
-                    <div class="match-card">
+                    <div class="match-card" onclick="openMatchDetail('${match.sport}', ${match.fixture?.id || match.id})">
                         <div class="match-header">
-                            <div>
-                                <span class="league-badge">${sportEmoji} ${match.league?.name || 'Unknown'}</span>
-                            </div>
-                            <div class="live-indicator">
-                                <span class="dot"></span>
-                                LIVE ${statusText}
-                            </div>
+                            <span class="league-badge">${emoji} ${match.league?.name || 'Unknown'}</span>
+                            ${isLive ? `
+                                <div class="live-indicator">
+                                    <span class="dot"></span>
+                                    LIVE ${statusText}
+                                </div>
+                            ` : ''}
                         </div>
                         
                         <div class="teams-container">
                             <div class="team">
-                                <div class="team-logo">${sportEmoji}</div>
+                                <div class="team-logo">${emoji}</div>
                                 <div class="team-name">${match.home_team?.name || 'TBD'}</div>
                                 <div class="team-venue">📍 ${match.home_team?.venue || match.home_team?.city || 'Home'}</div>
                             </div>
@@ -484,11 +611,10 @@
                                     <span class="score-divider">-</span>
                                     <span class="score-value">${match.away_score || 0}</span>
                                 </div>
-                                <span class="score-label">${match.home_team?.venue || ''}</span>
                             </div>
                             
                             <div class="team">
-                                <div class="team-logo">${sportEmoji}</div>
+                                <div class="team-logo">${emoji}</div>
                                 <div class="team-name">${match.away_team?.name || 'TBD'}</div>
                                 <div class="team-venue">📍 ${match.away_team?.venue || match.away_team?.city || 'Away'}</div>
                             </div>
@@ -498,11 +624,173 @@
             }).join('');
         }
         
-        // Auto-refresh
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            setInterval(loadData, 30000);
-        });
+        // Match Detail with WebSocket
+        function openMatchDetail(sport, matchId) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modal-content');
+            
+            // Find match data
+            let match = null;
+            if (allData?.sports?.[sport]?.matches) {
+                match = allData.sports[sport].matches.find(m => (m.fixture?.id || m.id) === matchId);
+            }
+            
+            if (!match) {
+                match = { 
+                    home_team: { name: 'Team A' }, 
+                    away_team: { name: 'Team B' },
+                    home_score: 0,
+                    away_score: 0,
+                    status: 'LIVE',
+                    time: 45
+                };
+            }
+            
+            const emoji = getSportEmoji(sport);
+            
+            content.innerHTML = `
+                <h2 style="margin-bottom: 20px;">${emoji} ${match.league?.name || 'Match'}</h2>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">${emoji}</div>
+                        <div style="font-weight: 600;">${match.home_team?.name || 'Home'}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700;">
+                            ${match.home_score || 0} - ${match.away_score || 0}
+                        </div>
+                        <div style="color: var(--accent-live);">${match.time || match.status}</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 3rem; margin-bottom: 10px;">${emoji}</div>
+                        <div style="font-weight: 600;">${match.away_team?.name || 'Away'}</div>
+                    </div>
+                </div>
+                
+                <div class="ws-status" id="ws-status">
+                    <span class="status-dot"></span>
+                    <span>Connecting to live chat...</span>
+                </div>
+                
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-message">🏟️ Welcome to live match chat!</div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Say something..." 
+                        onkeypress="if(event.key==='Enter')sendChat()">
+                    <button onclick="sendChat()">Send</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            
+            // Connect WebSocket for this match
+            connectMatchWebSocket(sport, matchId);
+        }
+        
+        // WebSocket connection
+        function connectMatchWebSocket(sport, matchId) {
+            disconnectWebSocket();
+            
+            const wsStatus = document.getElementById('ws-status');
+            
+            try {
+                ws = new WebSocket(`wss://ea-fc-live-dashboard.onrender.com/ws/match/${matchId}`);
+                
+                ws.onopen = () => {
+                    wsStatus.innerHTML = '<span class="status-dot"></span><span>🟢 Live chat connected</span>';
+                    wsStatus.classList.remove('disconnected');
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'chat') {
+                        addChatMessage(data.message);
+                    } else if (data.type === 'score_update') {
+                        // Update score
+                        console.log('Score update:', data);
+                    }
+                };
+                
+                ws.onclose = () => {
+                    wsStatus.innerHTML = '<span>🔴 Disconnected</span>';
+                    wsStatus.classList.add('disconnected');
+                };
+                
+                ws.onerror = () => {
+                    wsStatus.innerHTML = '<span>⚠️ Connection error</span>';
+                    wsStatus.classList.add('disconnected');
+                };
+                
+                // Set inactivity timeout (30 seconds)
+                resetInactivityTimer();
+                
+            } catch (e) {
+                wsStatus.innerHTML = '<span>⚠️ WebSocket not available</span>';
+                wsStatus.classList.add('disconnected');
+            }
+        }
+        
+        // Disconnect WebSocket
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            if (wsTimeout) {
+                clearTimeout(wsTimeout);
+                wsTimeout = null;
+            }
+        }
+        
+        // Reset inactivity timer
+        function resetInactivityTimer() {
+            if (wsTimeout) clearTimeout(wsTimeout);
+            wsTimeout = setTimeout(() => {
+                disconnectWebSocket();
+            }, 30000); // 30 seconds
+        }
+        
+        // Add chat message
+        function addChatMessage(msg) {
+            const container = document.getElementById('chat-container');
+            container.innerHTML += `<div class="chat-message">${msg}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Send chat
+        function sendChat() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (message && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'chat', message }));
+                input.value = '';
+                resetInactivityTimer();
+            }
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            disconnectWebSocket();
+        }
+        
+        // Refresh all data
+        function refreshAll() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('refreshing');
+            
+            loadAllData().finally(() => btn.classList.remove('refreshing'));
+        }
+        
+        // Activity listeners to reset timer
+        document.addEventListener('mousemove', resetInactivityTimer);
+        document.addEventListener('keypress', resetInactivityTimer);
+        
+        // Init
+        document.addEventListener('DOMContentLoaded', loadAllData);
     </script>
 </body>
 </html>
