@@ -592,37 +592,46 @@
             const sportsCount = Object.values(allData.sports).filter(s => s.count > 0).length;
             document.getElementById('sports-count').textContent = sportsCount;
             
-            // Calculate avg score
+            // Calculate avg score - FIX: Handle API response format
             let totalScore = 0;
             matches.forEach(m => {
-                totalScore += (m.home_score || 0) + (m.away_score || 0);
+                const home = m.scores?.home?.total ?? m.home_score ?? 0;
+                const away = m.scores?.away?.total ?? m.away_score ?? 0;
+                totalScore += home + away;
             });
             document.getElementById('avg-score').textContent = 
                 matches.length ? (totalScore / matches.length).toFixed(1) : '0';
             
             // Render matches
             container.innerHTML = matches.map((match, idx) => {
+                // FIX: Handle API response format (teams.home.name, scores.home.total)
+                const homeTeam = match.teams?.home || match.home_team || {};
+                const awayTeam = match.teams?.away || match.away_team || {};
+                const homeScore = match.scores?.home?.total ?? match.home_score ?? 0;
+                const awayScore = match.scores?.away?.total ?? match.away_score ?? 0;
+                const leagueName = match.league?.name || 'Match';
+                
                 // Determine if match is live or scheduled
-                const status = match.status || match.game?.status || 'NS';
+                const status = match.status?.short || match.status || 'NS';
                 const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET', 'FT'].includes(status);
                 
                 // Get start time
                 let timeDisplay = '';
                 if (isLive) {
-                    timeDisplay = `LIVE ${match.time || match.game?.time || status}`;
-                } else if (match.date || match.game?.date) {
-                    const matchDate = new Date(match.date || match.game?.date);
+                    timeDisplay = `LIVE ${match.time || status}`;
+                } else if (match.date) {
+                    const matchDate = new Date(match.date);
                     timeDisplay = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                } else if (match.time || match.game?.time) {
-                    timeDisplay = match.time || match.game?.time;
+                } else if (match.time) {
+                    timeDisplay = match.time;
                 }
                 
-                const emoji = getSportEmoji(match.sport || match.league?.name?.toLowerCase());
+                const emoji = getSportEmoji(match.sport || leagueName.toLowerCase());
                 
                 return `
-                    <div class="match-card" onclick="openMatchDetail('${match.sport || 'basketball'}', ${match.id || match.fixture?.id || idx})">
+                    <div class="match-card" onclick="openMatchDetail('${match.sport || 'basketball'}', ${match.id})">
                         <div class="match-header">
-                            <span class="league-badge">${emoji} ${match.league?.name || match.game?.league?.name || 'Match'}</span>
+                            <span class="league-badge">${emoji} ${leagueName}</span>
                             ${isLive ? `
                                 <div class="live-indicator">
                                     <span class="dot"></span>
@@ -636,22 +645,22 @@
                         <div class="teams-container">
                             <div class="team">
                                 <div class="team-logo">${emoji}</div>
-                                <div class="team-name">${match.home_team?.name || 'TBD'}</div>
-                                <div class="team-venue">📍 ${match.home_team?.venue || match.home_team?.city || 'Home'}</div>
+                                <div class="team-name">${homeTeam.name || 'TBD'}</div>
+                                <div class="team-venue">📍 ${match.venue || 'Home'}</div>
                             </div>
                             
                             <div class="score-container">
                                 <div class="score">
-                                    <span class="score-value">${match.home_score || 0}</span>
+                                    <span class="score-value">${homeScore}</span>
                                     <span class="score-divider">-</span>
-                                    <span class="score-value">${match.away_score || 0}</span>
+                                    <span class="score-value">${awayScore}</span>
                                 </div>
                             </div>
                             
                             <div class="team">
                                 <div class="team-logo">${emoji}</div>
-                                <div class="team-name">${match.away_team?.name || 'TBD'}</div>
-                                <div class="team-venue">📍 ${match.away_team?.venue || match.away_team?.city || 'Away'}</div>
+                                <div class="team-name">${awayTeam.name || 'TBD'}</div>
+                                <div class="team-venue">📍 ${match.venue || 'Away'}</div>
                             </div>
                         </div>
                     </div>
@@ -670,13 +679,17 @@
                 match = allData.sports[sport].matches.find(m => (m.fixture?.id || m.id) === matchId);
             }
             
+            // FIX: Handle API response format for match detail
+            const homeTeam = match?.teams?.home || match?.home_team || { name: 'Team A' };
+            const awayTeam = match?.teams?.away || match?.away_team || { name: 'Team B' };
+            const homeScore = match?.scores?.home?.total ?? match?.home_score ?? 0;
+            const awayScore = match?.scores?.away?.total ?? match?.away_score ?? 0;
+            
             if (!match) {
                 match = { 
-                    home_team: { name: 'Team A' }, 
-                    away_team: { name: 'Team B' },
-                    home_score: 0,
-                    away_score: 0,
-                    status: 'LIVE',
+                    teams: { home: { name: 'Team A' }, away: { name: 'Team B' } },
+                    scores: { home: { total: 0 }, away: { total: 0 } },
+                    status: { short: 'LIVE' },
                     time: 45
                 };
             }
@@ -690,17 +703,17 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <div style="text-align: center; flex: 1;">
                         <div style="font-size: 3rem; margin-bottom: 10px;">${emoji}</div>
-                        <div style="font-weight: 600;">${match.home_team?.name || 'Home'}</div>
+                        <div style="font-weight: 600;">${homeTeam.name || 'Home'}</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-size: 2.5rem; font-weight: 700;">
-                            ${match.home_score || 0} - ${match.away_score || 0}
+                            ${homeScore} - ${awayScore}
                         </div>
-                        <div style="color: var(--accent-live);">${match.time || match.status}</div>
+                        <div style="color: var(--accent-live);">${match.time || match.status?.short || match.status}</div>
                     </div>
                     <div style="text-align: center; flex: 1;">
                         <div style="font-size: 3rem; margin-bottom: 10px;">${emoji}</div>
-                        <div style="font-weight: 600;">${match.away_team?.name || 'Away'}</div>
+                        <div style="font-weight: 600;">${awayTeam.name || 'Away'}</div>
                     </div>
                 </div>
                 
