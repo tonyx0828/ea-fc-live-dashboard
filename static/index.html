@@ -690,16 +690,16 @@
                 
                 // Simple: just show start time for all games
                 if (isLive || status in ['Q1', 'Q2', 'Q3', 'Q4', 'HT', 'P1', 'P2', 'P3']) {
-                    // Live games: show "LIVE" + start time
-                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE</div>
-                        <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">Started: ${startTimeStr}</div>`;
+                    // Live games: show "比赛中" + start time
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>比赛中</div>
+                        <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">开赛: ${startTimeStr}</div>`;
                 } else if (status === 'FT') {
-                    // Finished: show "Finished" + start time
-                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">Finished</div>
+                    // Finished: show "已结束" + start time
+                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">已结束</div>
                         <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">${startTimeStr}</div>`;
                 } else {
                     // Upcoming: just show start time
-                    statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${startTimeStr || 'TBD'}</div>`;
+                    statusDisplay = `<div class="match-time" style="color: var(--accent);">${startTimeStr || '待定'}</div>`;
                 }
                 
                 return `
