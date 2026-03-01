@@ -478,6 +478,19 @@
                 // Render tabs
                 renderTabs();
                 
+                // Check if there's a message (no data)
+                if (result.sports && result.sports.message) {
+                    document.getElementById('matches-container').innerHTML = `
+                        <div class="no-matches">
+                            <div style="font-size: 4rem;">${result.sports.message.emoji || '😴'}</div>
+                            <p>${result.sports.message.note || 'No matches right now'}</p>
+                        </div>
+                    `;
+                    document.getElementById('match-count').textContent = '0';
+                    statusEl.textContent = '⚪ No matches';
+                    return;
+                }
+                
                 // Display matches (filtered on client side)
                 displayMatches();
                 
