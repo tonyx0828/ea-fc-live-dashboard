@@ -47,8 +47,8 @@ SPORTS = {
 class MultiSportAPIClient:
     """Multi-sport API client"""
     
-    # Use basketball API (key works for this)
-    BASE_URL = "https://v1.basketball.api-sports.io"
+    # Use NBA v2 API as recommended
+    BASE_URL = "https://v2.nba.api-sports.io"
     
     def __init__(self, api_key: str = None):
         self.api_key = api_key or settings.API_FOOTBALL_KEY
@@ -228,9 +228,8 @@ class MultiSportAPIClient:
             # Basketball uses v1.basketball.api-sports.io
             # Try different endpoints - fix from API-Football AI
             endpoints_to_try = [
-                ("/fixtures", {"league": 12, "live": "all"}),
                 ("/fixtures", {"live": "all"}),
-                ("/games", {"league": 12}),
+                ("/games", {"live": "all"}),
             ]
             
             for endpoint, params in endpoints_to_try:
