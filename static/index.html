@@ -434,22 +434,22 @@
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="refreshAll()" title="Refresh">🔄</button>
-    
     <script>
-        // Sport emoji mapping
+        // Sport emoji mapping - FIXED
         const SPORT_EMOJI = {
             football: '⚽',
             basketball: '🏀',
             nba: '🏀',
             'american-football': '🏈',
             nfl: '🏈',
+            afl: '🏉',
             hockey: '🏒',
             baseball: '⚾',
-            // Also map sport names from API
-            'Basketball': '🏀',
-            'NBA': '🏀',
-            'Football': '⚽'
+            handball: '🤾',
+            formula1: '🏎️',
+            mma: '🥊',
+            rugby: '🏉',
+            volleyball: '🏐'
         };
         
         // Global cache
@@ -588,21 +588,36 @@
                 matches.length ? (totalScore / matches.length).toFixed(1) : '0';
             
             // Render matches
-            container.innerHTML = matches.map(match => {
-                const isLive = !['FT', 'NS', 'POST'].includes(match.status);
-                const statusText = match.time ? `${match.time}'` : match.status;
-                const emoji = getSportEmoji(match.sport);
+            container.innerHTML = matches.map((match, idx) => {
+                // Determine if match is live or scheduled
+                const status = match.status || match.game?.status || 'NS';
+                const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET', 'FT'].includes(status);
+                
+                // Get start time
+                let timeDisplay = '';
+                if (isLive) {
+                    timeDisplay = `LIVE ${match.time || match.game?.time || status}`;
+                } else if (match.date || match.game?.date) {
+                    const matchDate = new Date(match.date || match.game?.date);
+                    timeDisplay = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                } else if (match.time || match.game?.time) {
+                    timeDisplay = match.time || match.game?.time;
+                }
+                
+                const emoji = getSportEmoji(match.sport || match.league?.name?.toLowerCase());
                 
                 return `
-                    <div class="match-card" onclick="openMatchDetail('${match.sport}', ${match.fixture?.id || match.id})">
+                    <div class="match-card" onclick="openMatchDetail('${match.sport || 'basketball'}', ${match.id || match.fixture?.id || idx})">
                         <div class="match-header">
-                            <span class="league-badge">${emoji} ${match.league?.name || 'Unknown'}</span>
+                            <span class="league-badge">${emoji} ${match.league?.name || match.game?.league?.name || 'Match'}</span>
                             ${isLive ? `
                                 <div class="live-indicator">
                                     <span class="dot"></span>
-                                    LIVE ${statusText}
+                                    LIVE ${match.time || ''}
                                 </div>
-                            ` : ''}
+                            ` : `
+                                <div class="match-time">${timeDisplay}</div>
+                            `}
                         </div>
                         
                         <div class="teams-container">
@@ -656,6 +671,7 @@
             const emoji = getSportEmoji(sport);
             
             content.innerHTML = `
+                <button class="refresh-btn" style="position:absolute;top:15px;right:60px;width:40px;height:40px;font-size:1rem;" onclick="loadData();openMatchDetail('${sport}', ${matchId})">🔄</button>
                 <h2 style="margin-bottom: 20px;">${emoji} ${match.league?.name || 'Match'}</h2>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">

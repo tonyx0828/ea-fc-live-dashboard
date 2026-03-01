@@ -1,69 +1,91 @@
 """
 Multi-Sport Live Dashboard API Client
-Supports: Football, NBA, NFL, NHL, Baseball, AFL, Handball, Formula-1, MMA, Rugby, Volleyball
+Supports: Basketball, NBA, NFL, AFL, Hockey, Baseball, Handball, Formula-1, MMA, Rugby, Volleyball
 """
 import requests
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 from config import settings
 
 
-# All sports with their API endpoints
+# All sports with their API endpoints - DIFFERENT endpoints for different sports!
 SPORTS = {
     "basketball": {
         "name": "Basketball",
         "base_url": "https://v1.basketball.api-sports.io",
-        "emoji": "🏀"
+        "emoji": "🏀",
+        "endpoint": "/games",
+        "params": {}
     },
     "nba": {
         "name": "NBA",
         "base_url": "https://v2.nba.api-sports.io",
-        "emoji": "🏀"
+        "emoji": "🏀",
+        "endpoint": "/games",
+        "params": {}
     },
     "nfl": {
         "name": "NFL",
         "base_url": "https://v1.american-football.api-sports.io",
-        "emoji": "🏈"
+        "emoji": "🏈",
+        "endpoint": "/games",
+        "params": {}
     },
     "afl": {
         "name": "AFL",
         "base_url": "https://v1.afl.api-sports.io",
-        "emoji": "🏉"
+        "emoji": "🏉",
+        "endpoint": "/games",
+        "params": {}
     },
     "hockey": {
         "name": "Hockey",
         "base_url": "https://v1.hockey.api-sports.io",
-        "emoji": "🏒"
+        "emoji": "🏒",
+        "endpoint": "/games",
+        "params": {}
     },
     "baseball": {
         "name": "Baseball",
         "base_url": "https://v1.baseball.api-sports.io",
-        "emoji": "⚾"
+        "emoji": "⚾",
+        "endpoint": "/games",
+        "params": {}
     },
     "handball": {
         "name": "Handball",
         "base_url": "https://v1.handball.api-sports.io",
-        "emoji": "🤾"
+        "emoji": "🤾",
+        "endpoint": "/games",
+        "params": {}
     },
     "formula1": {
         "name": "Formula 1",
         "base_url": "https://v1.formula-1.api-sports.io",
-        "emoji": "🏎️"
+        "emoji": "🏎️",
+        "endpoint": "/races",
+        "params": {"tab": "scheduled"}
     },
     "mma": {
         "name": "MMA",
         "base_url": "https://v1.mma.api-sports.io",
-        "emoji": "🥊"
+        "emoji": "🥊",
+        "endpoint": "/fights",
+        "params": {"tab": "scheduled"}
     },
     "rugby": {
         "name": "Rugby",
         "base_url": "https://v1.rugby.api-sports.io",
-        "emoji": "🏉"
+        "emoji": "🏉",
+        "endpoint": "/games",
+        "params": {}
     },
     "volleyball": {
         "name": "Volleyball",
         "base_url": "https://v1.volleyball.api-sports.io",
-        "emoji": "🏐"
+        "emoji": "🏐",
+        "endpoint": "/games",
+        "params": {}
     }
 }
 
@@ -90,7 +112,7 @@ class MultiSportAPIClient:
         return {"response": []}
     
     def get_all_live_matches(self) -> Dict[str, List]:
-        """Get matches for all available sports - try live first, then upcoming"""
+        """Get matches for all available sports"""
         result = {}
         
         if not self.api_key or self.api_key == "demo_key":
@@ -99,16 +121,13 @@ class MultiSportAPIClient:
         # Try each sport
         for sport_key, sport_info in SPORTS.items():
             try:
-                # First try /games (for games today)
-                data = self._request(sport_info["base_url"], "/games", {})
+                data = self._request(
+                    sport_info["base_url"],
+                    sport_info["endpoint"],
+                    sport_info["params"]
+                )
+                
                 matches = data.get("response", [])
-                
-                # If no games, try /fixtures with date (upcoming)
-                if not matches:
-                    today = datetime.now().strftime("%Y-%m-%d")
-                    data = self._request(sport_info["base_url"], "/games", {"date": today})
-                    matches = data.get("response", [])
-                
                 if matches:
                     result[sport_key] = {
                         "name": sport_info["name"],
@@ -116,14 +135,13 @@ class MultiSportAPIClient:
                         "count": len(matches),
                         "matches": matches
                     }
-                    print(f"✅ {sport_key}: {len(matches)} games")
+                    print(f"✅ {sport_key}: {len(matches)} matches")
                 else:
-                    print(f"⚪ {sport_key}: 0 games")
+                    print(f"⚪ {sport_key}: 0 matches")
                     
             except Exception as e:
                 print(f"❌ {sport_key}: {e}")
         
-        # If no data, show message
         if not result:
             result["message"] = {
                 "name": "No Matches",
@@ -141,15 +159,6 @@ class MultiSportAPIClient:
             return []
         
         sport_info = SPORTS[sport]
+        data = self._request(sport_info["base_url"], sport_info["endpoint"], sport_info["params"])
         
-        # Try /games first
-        data = self._request(sport_info["base_url"], "/games", {})
-        matches = data.get("response", [])
-        
-        # If no matches, try with date
-        if not matches:
-            today = datetime.now().strftime("%Y-%m-%d")
-            data = self._request(sport_info["base_url"], "/games", {"date": today})
-            matches = data.get("response", [])
-        
-        return matches
+        return data.get("response", [])
