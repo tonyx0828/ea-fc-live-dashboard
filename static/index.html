@@ -642,7 +642,7 @@
                 
                 // Determine if match is live or scheduled
                 const status = match.status?.short || match.status || 'NS';
-                const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET', 'FT'].includes(status);
+                const isLive = ['1H', '2H', 'Q1', 'Q2', 'Q3', 'Q4', 'P1', 'P2', 'P3', 'HT', 'ET', 'FT', 'AOT'].includes(status);
                 
                 // Get start time
                 let timeDisplay = '';
@@ -660,11 +660,11 @@
                 
                 // Determine display status
                 let statusDisplay = '';
-                if (isLive) {
+                if (isLive || status === 'AOT') {
                     statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE ${match.time || ''}</div>`;
                 } else if (status === 'FT') {
                     statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">FT</div>`;
-                } else if (status === 'NS' || status === 'Scheduled') {
+                } else if (status === 'NS' || status === 'Scheduled' || status === 'TBD') {
                     // Show upcoming time
                     const matchDate = new Date(match.date);
                     const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: 'America/Vancouver'});
