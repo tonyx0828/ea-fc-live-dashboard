@@ -4,12 +4,11 @@ Supports: Football, NBA, NFL, NHL, Baseball, AFL, Handball, Formula-1, MMA, Rugb
 """
 import requests
 from typing import Optional, List, Dict, Any
-import random
 from datetime import datetime, timedelta
 from config import settings
 
 
-# All sports with their API endpoints - using /games endpoint (confirmed working)
+# All sports with their API endpoints
 SPORTS = {
     "basketball": {
         "name": "Basketball",
@@ -91,7 +90,7 @@ class MultiSportAPIClient:
         return {"response": []}
     
     def get_all_live_matches(self) -> Dict[str, List]:
-        """Get live matches for all available sports"""
+        """Get matches for all available sports - try live first, then upcoming"""
         result = {}
         
         if not self.api_key or self.api_key == "demo_key":
@@ -100,13 +99,16 @@ class MultiSportAPIClient:
         # Try each sport
         for sport_key, sport_info in SPORTS.items():
             try:
-                data = self._request(
-                    sport_info["base_url"],
-                    "/games",
-                    {}
-                )
-                
+                # First try /games (for games today)
+                data = self._request(sport_info["base_url"], "/games", {})
                 matches = data.get("response", [])
+                
+                # If no games, try /fixtures with date (upcoming)
+                if not matches:
+                    today = datetime.now().strftime("%Y-%m-%d")
+                    data = self._request(sport_info["base_url"], "/games", {"date": today})
+                    matches = data.get("response", [])
+                
                 if matches:
                     result[sport_key] = {
                         "name": sport_info["name"],
@@ -114,9 +116,9 @@ class MultiSportAPIClient:
                         "count": len(matches),
                         "matches": matches
                     }
-                    print(f"✅ {sport_key}: {len(matches)} matches")
+                    print(f"✅ {sport_key}: {len(matches)} games")
                 else:
-                    print(f"⚪ {sport_key}: 0 matches")
+                    print(f"⚪ {sport_key}: 0 games")
                     
             except Exception as e:
                 print(f"❌ {sport_key}: {e}")
@@ -124,21 +126,30 @@ class MultiSportAPIClient:
         # If no data, show message
         if not result:
             result["message"] = {
-                "name": "No Live Matches",
+                "name": "No Matches",
                 "emoji": "😴",
                 "count": 0,
                 "matches": [],
-                "note": "No live matches right now!"
+                "note": "No matches right now!"
             }
         
         return result
     
     def get_live_matches(self, sport: str = "basketball") -> List[Dict[str, Any]]:
-        """Get live matches for a specific sport"""
+        """Get matches for a specific sport"""
         if sport not in SPORTS:
             return []
         
         sport_info = SPORTS[sport]
-        data = self._request(sport_info["base_url"], "/games", {})
         
-        return data.get("response", [])
+        # Try /games first
+        data = self._request(sport_info["base_url"], "/games", {})
+        matches = data.get("response", [])
+        
+        # If no matches, try with date
+        if not matches:
+            today = datetime.now().strftime("%Y-%m-%d")
+            data = self._request(sport_info["base_url"], "/games", {"date": today})
+            matches = data.get("response", [])
+        
+        return matches
