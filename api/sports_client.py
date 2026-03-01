@@ -47,7 +47,8 @@ SPORTS = {
 class MultiSportAPIClient:
     """Multi-sport API client"""
     
-    BASE_URL = "https://v3.football.api-sports.io"
+    # Different sports use different API endpoints
+    BASE_URL = "https://v1.basketball.api-sports.io"
     
     def __init__(self, api_key: str = None):
         self.api_key = api_key or settings.API_FOOTBALL_KEY
@@ -224,26 +225,21 @@ class MultiSportAPIClient:
         
         # Only try if we have a valid API key
         if self.api_key and self.api_key != "demo_key":
-            # Define sports to try
-            sports_to_try = [
-                ("football", "⚽", 39, "/fixtures/live"),
-                ("basketball", "🏀", 12, "/basketball/games"),
-                ("nba", "🏀", 12, "/basketball/games"),
-            ]
-            
-            for sport_key, emoji, league_id, endpoint in sports_to_try:
-                try:
-                    data = self._request(endpoint, {"league": league_id})
-                    if data.get("response"):
-                        result[sport_key] = {
-                            "name": "Basketball" if sport_key in ["basketball", "nba"] else "Football",
-                            "emoji": emoji,
-                            "count": len(data["response"]),
-                            "matches": data["response"]
-                        }
-                        print(f"✅ Got {len(data['response'])} {sport_key} matches")
-                except Exception as e:
-                    print(f"❌ {sport_key} API error: {e}")
+            # Basketball uses v1.basketball.api-sports.io
+            # Let's test basketball first
+            try:
+                # Use basketball endpoint
+                basketball_data = self._request("/basketball/games", {"league": 12})
+                if basketball_data.get("response"):
+                    result["basketball"] = {
+                        "name": "Basketball",
+                        "emoji": "🏀",
+                        "count": len(basketball_data["response"]),
+                        "matches": basketball_data["response"]
+                    }
+                    print(f"✅ Got {len(basketball_data['response'])} basketball matches")
+            except Exception as e:
+                print(f"❌ Basketball API error: {e}")
         
         # If no real data, show message
         if not result:
