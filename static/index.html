@@ -669,12 +669,22 @@
                 // Parse the ISO date string properly (contains timezone offset)
                 const matchDate = match.date ? new Date(match.date) : null;
                 
-                // Format start time in local timezone
+                // Format start time in local timezone - use explicit parsing
                 let startTimeStr = '';
-                if (matchDate && !isNaN(matchDate.getTime())) {
-                    const timeStr = matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    const dateStr = matchDate.toLocaleDateString([], {month: 'short', day: 'numeric'});
-                    startTimeStr = `${dateStr} ${timeStr}`;
+                if (match.date) {
+                    // Parse ISO string: 2026-03-01T20:30:00+00:00
+                    const [datePart, timePart] = match.date.split('T');
+                    const [year, month, day] = datePart.split('-').map(Number);
+                    const [time, timezone] = timePart.split('+');
+                    const [hours, minutes] = time.split(':').map(Number);
+                    
+                    // Create date in local timezone
+                    const localDate = new Date(year, month - 1, day, hours, minutes);
+                    
+                    // Format to local timezone
+                    const localTimeStr = localDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true});
+                    const localDateStr = localDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+                    startTimeStr = `${localDateStr} ${localTimeStr}`;
                 }
                 
                 if (isLive || status in ['Q1', 'Q2', 'Q3', 'Q4', 'HT', 'P1', 'P2', 'P3']) {
