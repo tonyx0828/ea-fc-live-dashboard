@@ -35,38 +35,67 @@ class FootballAPIClient:
             return self._mock_data(endpoint, params)
     
     def _mock_data(self, endpoint: str, params: dict = None) -> dict:
-        """返回模拟数据（开发/测试用）"""
-        if "live" in endpoint or "fixtures" in endpoint:
-            return {
-                "response": [
-                    {
-                        "fixture": {
-                            "id": 1,
-                            "date": "2026-02-28T20:00:00Z",
-                            "status": {"short": "2H"}
-                        },
-                        "teams": {
-                            "home": {"name": "Manchester United", "logo": "..."},
-                            "away": {"name": "Liverpool", "logo": "..."}
-                        },
-                        "goals": {"home": 2, "away": 1},
-                        "score": {"halftime": {"home": 1, "away": 1}}
-                    },
-                    {
-                        "fixture": {
-                            "id": 2,
-                            "date": "2026-02-28T20:00:00Z",
-                            "status": {"short": "1H"}
-                        },
-                        "teams": {
-                            "home": {"name": "Barcelona", "logo": "..."},
-                            "away": {"name": "Real Madrid", "logo": "..."}
-                        },
-                        "goals": {"home": 0, "away": 0},
-                        "score": {"halftime": {"home": 0, "away": 0}}
-                    }
-                ]
+        """返回模拟数据（开发/测试用）- 更真实的模拟"""
+        import random
+        from datetime import datetime, timedelta
+        
+        # 模拟更多比赛
+        leagues = [
+            (39, "Premier League"),
+            (140, "La Liga"),
+            (78, "Bundesliga"),
+            (135, "Serie A"),
+            (61, "Ligue 1")
+        ]
+        
+        teams = [
+            ("Manchester United", "Liverpool"),
+            ("Barcelona", "Real Madrid"),
+            ("Bayern Munich", "Borussia Dortmund"),
+            ("Juventus", "AC Milan"),
+            ("PSG", "Marseille"),
+            ("Arsenal", "Chelsea"),
+            ("Manchester City", "Tottenham"),
+        ]
+        
+        live_statuses = ["1H", "2H", "HT"]
+        live_matches = []
+        
+        for i in range(8):  # 生成 8 场 Live 比赛
+            league = random.choice(leagues)
+            home, away = random.choice(teams)
+            status = random.choice(live_statuses)
+            
+            # 随机比分
+            home_goals = random.randint(0, 3)
+            away_goals = random.randint(0, 2)
+            
+            # 随机时间
+            base_time = datetime.now() - timedelta(minutes=random.randint(30, 80))
+            
+            match = {
+                "fixture": {
+                    "id": 1000 + i,
+                    "date": base_time.isoformat() + "Z",
+                    "status": {"short": status, "elapsed": random.randint(15, 75)}
+                },
+                "league": {
+                    "id": league[0],
+                    "name": league[1],
+                    "season": 2024
+                },
+                "teams": {
+                    "home": {"name": home, "logo": f"https://logo.clearbit.com/{home.lower().replace(' ', '')}.com"},
+                    "away": {"name": away, "logo": f"https://logo.clearbit.com/{away.lower().replace(' ', '')}.com"}
+                },
+                "goals": {"home": home_goals, "away": away_goals},
+                "score": {
+                    "halftime": {"home": random.randint(0, 2), "away": random.randint(0, 1)}
+                }
             }
+            live_matches.append(match)
+        
+        return {"response": live_matches}
         elif "statistics" in endpoint:
             return {
                 "response": [

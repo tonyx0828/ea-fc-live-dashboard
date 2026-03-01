@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     """应用配置"""
     
     # API-Football Key (免费注册: https://dashboard.api-football.com/)
-    API_FOOTBALL_KEY: str = os.getenv("API_FOOTBALL_KEY", "")
+    # 不填也能跑 (使用模拟数据)
+    API_FOOTBALL_KEY: str = os.getenv("API_FOOTBALL_KEY", "demo_key")
     
     # FastAPI 配置
     APP_NAME: str = "EA FC Live Dashboard"
