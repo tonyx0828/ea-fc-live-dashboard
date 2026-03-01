@@ -61,22 +61,8 @@ ws_manager = ConnectionManager()
 
 @app.get("/")
 async def root():
-    # 优先返回前端页面
-    index_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {
-        "status": "ok",
-        "message": "EA FC Live Dashboard Running",
-        "docs": "/docs",
-        "frontend": "Open / to view frontend",
-        "features": [
-            "REST API",
-            "WebSocket real-time",
-            "Polars advanced analytics",
-            "Multi-filter"
-        ]
-    }
+    # 返回前端页面
+    return FileResponse("static/index.html")
 
 
 @app.get("/health")
