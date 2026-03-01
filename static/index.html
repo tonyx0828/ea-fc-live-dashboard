@@ -688,16 +688,17 @@
                     startTimeStr = `${localDateStr} ${localTimeStr}`;
                 }
                 
+                // Simple: just show start time for all games
                 if (isLive || status in ['Q1', 'Q2', 'Q3', 'Q4', 'HT', 'P1', 'P2', 'P3']) {
-                    // For live games, show current quarter + start time
-                    const gameTime = match.status?.timer || match.status?.long || '';
-                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>${gameTime || 'LIVE'}</div>
+                    // Live games: show "LIVE" + start time
+                    statusDisplay = `<div class="live-indicator"><span class="dot"></span>LIVE</div>
                         <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">Started: ${startTimeStr}</div>`;
                 } else if (status === 'FT') {
-                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">Final</div>
+                    // Finished: show "Finished" + start time
+                    statusDisplay = `<div class="match-time" style="color: var(--text-secondary);">Finished</div>
                         <div class="match-time" style="font-size: 0.75rem; color: var(--text-muted);">${startTimeStr}</div>`;
                 } else {
-                    // Upcoming games - show start time prominently
+                    // Upcoming: just show start time
                     statusDisplay = `<div class="match-time" style="color: var(--accent);">📅 ${startTimeStr || 'TBD'}</div>`;
                 }
                 
