@@ -266,8 +266,11 @@ class MultiSportAPIClient:
         result = {}
         today = datetime.now().strftime("%Y-%m-%d")
         
-        # Only try if we have a valid API key
-        if not self.api_key or self.api_key == "demo_key":
+        # Debug: print API key status
+        print(f"DEBUG: API key present: {bool(self.api_key)}, length: {len(self.api_key) if self.api_key else 0}")
+        
+        # Only try if we have a valid API key (not empty, not demo)
+        if not self.api_key or len(str(self.api_key)) < 10:
             # Return empty sports list for demo mode
             for sport_key, sport_info in SPORTS.items():
                 result[sport_key] = {
@@ -276,6 +279,7 @@ class MultiSportAPIClient:
                     "count": 0,
                     "matches": []
                 }
+            print("DEBUG: No valid API key, returning empty results")
             return result
         
         # Fetch data for each sport
