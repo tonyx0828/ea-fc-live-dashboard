@@ -4,7 +4,7 @@ Stock Screener API Routes
 from fastapi import APIRouter
 from typing import Optional, List
 from pydantic import BaseModel
-from .stock.screener import screen_stocks, get_market_summary, STRATEGIES, DEFAULT_TICKERS
+from .screener import screen_stocks, get_market_summary, STRATEGIES, DEFAULT_TICKERS
 
 router = APIRouter(prefix="/api/stock", tags=["stock"])
 
@@ -47,7 +47,7 @@ async def screen(request: ScreenerRequest):
 @router.get("/ticker/{symbol}")
 async def get_ticker(symbol: str):
     """Get detailed info for a single ticker"""
-    from .stock.screener import get_stock_data
+    from .screener import get_stock_data
     
     data = get_stock_data(symbol.upper())
     
