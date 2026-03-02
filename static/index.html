@@ -380,10 +380,21 @@
 <body>
     <div class="container">
         <header>
-            <h1>🏆 Live Sports Dashboard</h1>
+            <h1>🏆 Live Dashboard</h1>
             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">
-                v2026.03.01.1051 | Build: <span id="build-time"></span>
+                v2026.03.02.0100 | Build: <span id="build-time"></span>
             </div>
+            
+            <!-- Main Category Tabs -->
+            <div style="display: flex; justify-content: center; gap: 10px; margin: 15px 0;">
+                <button id="tab-sports" class="sport-tab active" onclick="switchCategory('sports')" style="padding: 10px 30px; font-weight: 600;">
+                    ⚽ Sports
+                </button>
+                <button id="tab-stock" class="sport-tab" onclick="switchCategory('stock')" style="padding: 10px 30px; font-weight: 600;">
+                    📈 Stock Screener
+                </button>
+            </div>
+            
             <div class="header-meta">
                 <div class="status-badge">
                     <span class="status-dot"></span>
@@ -393,8 +404,53 @@
             </div>
         </header>
         
-        <!-- Sport Tabs -->
-        <div class="sport-tabs" id="sport-tabs"></div>
+        <!-- Sports Section -->
+        <div id="sports-section">
+            <!-- Sport Tabs -->
+            <div class="sport-tabs" id="sport-tabs"></div>
+        </div>
+        
+        <!-- Stock Section (hidden by default) -->
+        <div id="stock-section" style="display: none;">
+            <!-- Strategy Selector -->
+            <div class="sport-tabs">
+                <button class="sport-tab active" onclick="switchStockStrategy('momentum')">
+                    🚀 Momentum
+                </button>
+                <button class="sport-tab" onclick="switchStockStrategy('oversold')">
+                    🔥 Oversold
+                </button>
+                <button class="sport-tab" onclick="switchStockStrategy('value')">
+                    💎 Value
+                </button>
+                <button class="sport-tab" onclick="switchStockStrategy('breakout')">
+                    ⬆️ Breakout
+                </button>
+                <button class="sport-tab" onclick="switchStockStrategy('canslim')">
+                    📊 CANSLIM
+                </button>
+            </div>
+            
+            <!-- Stock Stats -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-value" id="stock-count">-</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stock-strategy">-</div>
+                    <div class="stat-label">Strategy</div>
+                </div>
+            </div>
+            
+            <!-- Stock Results -->
+            <div id="stock-container" class="matches-grid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading stock data...</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Stats -->
         <div class="stats-bar">
@@ -563,6 +619,120 @@
             });
             
             tabsEl.innerHTML = tabs;
+        }
+        
+        // Current category
+        let currentCategory = 'sports';
+        
+        // Switch between Sports and Stock
+        function switchCategory(category) {
+            currentCategory = category;
+            
+            // Update tab UI
+            document.getElementById('tab-sports').classList.toggle('active', category === 'sports');
+            document.getElementById('tab-stock').classList.toggle('active', category === 'stock');
+            
+            // Show/hide sections
+            document.getElementById('sports-section').style.display = category === 'sports' ? 'block' : 'none';
+            document.getElementById('stock-section').style.display = category === 'stock' ? 'block' : 'none';
+            
+            if (category === 'stock') {
+                // Load stock data if not loaded
+                if (!window.stockData) {
+                    loadStockData('momentum');
+                }
+            }
+        }
+        
+        // Stock strategy
+        let currentStockStrategy = 'momentum';
+        
+        // Load stock data
+        async function loadStockData(strategy) {
+            currentStockStrategy = strategy;
+            const container = document.getElementById('stock-container');
+            const countEl = document.getElementById('stock-count');
+            const strategyEl = document.getElementById('stock-strategy');
+            
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Loading stock data...</p></div>';
+            strategyEl.textContent = strategy;
+            
+            try {
+                const response = await fetch('/api/stock/screen', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({strategy: strategy, limit: 15})
+                });
+                
+                const data = await response.json();
+                window.stockData = data;
+                
+                countEl.textContent = data.count || 0;
+                
+                if (!data.results || data.results.length === 0) {
+                    container.innerHTML = '<div class="loading"><p>No stocks match this criteria</p></div>';
+                    return;
+                }
+                
+                // Render stock cards
+                container.innerHTML = data.results.map(stock => {
+                    const price = stock.price?.toFixed(2) || '-';
+                    const change = stock.change_1m?.toFixed(1) || '0';
+                    const changeColor = change >= 0 ? 'var(--accent-live)' : '#ff6b6b';
+                    const rsi = stock.rsi?.toFixed(1) || '-';
+                    const score = stock.score || 0;
+                    
+                    return `
+                        <div class="match-card" onclick="showStockDetail('${stock.ticker}')">
+                            <div class="match-header">
+                                <span class="league-badge">📈 ${stock.ticker}</span>
+                                <div class="match-time" style="color: ${changeColor}; font-weight: 600;">
+                                    ${change >= 0 ? '+' : ''}${change}%
+                                </div>
+                            </div>
+                            <div class="teams-container">
+                                <div class="team">
+                                    <div style="font-size: 2rem;">📊</div>
+                                    <div class="team-name">${stock.name}</div>
+                                    <div class="team-venue">$${price}</div>
+                                </div>
+                                <div class="score-container">
+                                    <div class="score">
+                                        <span class="score-value" style="font-size: 1.2rem;">Score: ${score}</span>
+                                    </div>
+                                </div>
+                                <div class="team">
+                                    <div style="font-size: 2rem;">📉</div>
+                                    <div class="team-name">RSI: ${rsi}</div>
+                                    <div class="team-venue">${stock.signals?.slice(0,2).join(', ') || ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Stock error:', error);
+                container.innerHTML = '<div class="loading"><p>Error loading stock data</p></div>';
+            }
+        }
+        
+        // Switch stock strategy
+        function switchStockStrategy(strategy) {
+            currentStockStrategy = strategy;
+            
+            // Update tab UI
+            document.querySelectorAll('#stock-section .sport-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.sport-tab')?.classList.add('active');
+            
+            loadStockData(strategy);
+        }
+        
+        // Show stock detail
+        function showStockDetail(ticker) {
+            alert(`Stock detail: ${ticker}\n\nComing soon: detailed analysis, charts, and trading recommendations.`);
         }
         
         // Switch sport (client-side filter, no API call)

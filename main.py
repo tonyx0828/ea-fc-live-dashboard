@@ -15,6 +15,7 @@ from datetime import datetime
 
 from api.football_client import FootballAPIClient
 from api.routes import router as api_router
+from api.stock.routes import router as stock_router
 from websocket.manager import ConnectionManager
 from processing.polars_processor import MatchAnalyzer
 from processing.advanced_analyzer import AdvancedMatchAnalyzer
@@ -75,6 +76,7 @@ async def health():
 
 # 挂载 API 路由
 app.include_router(api_router, prefix="/api", tags=["Football"])
+app.include_router(stock_router, prefix="/api/stock", tags=["Stock"])
 
 
 # ============ 高级过滤 API ============

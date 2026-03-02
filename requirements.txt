@@ -23,3 +23,4 @@ polars==0.20.3
 
 # 环境变量
 python-dotenv==1.0.0
+yfinance==0.2.36
