@@ -668,8 +668,9 @@
                     timeDisplay = match.time;
                 }
                 
-                // Use league-based emoji (more accurate)
-                const emoji = getSportEmojiFromLeague(leagueName);
+                // Use sport field from API, fallback to league-based
+                const sport = match.sport || leagueName.toLowerCase();
+                const emoji = SPORT_EMOJI[sport] || getSportEmojiFromLeague(leagueName);
                 
                 // Determine display status - always show start time
                 let statusDisplay = '';
