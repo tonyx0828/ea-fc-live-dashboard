@@ -76,7 +76,7 @@ async def health():
 
 # 挂载 API 路由
 app.include_router(api_router, prefix="/api", tags=["Football"])
-app.include_router(stock_router, prefix="/api/stock", tags=["Stock"])
+app.include_router(stock_router, tags=["Stock"])
 
 
 # ============ 高级过滤 API ============
