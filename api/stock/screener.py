@@ -99,6 +99,12 @@ def calculate_rsi(prices, period=14):
 def get_stock_data(ticker, period="3mo"):
     """Get comprehensive stock data"""
     try:
+        import yfinance as yf
+    except Exception as e:
+        print(f"yfinance import error: {e}")
+        return {"error": f"yfinance not available: {e}", "ticker": ticker}
+    
+    try:
         stock = yf.Ticker(ticker)
         info = stock.info
         
@@ -185,6 +191,11 @@ def screen_stocks(tickers, strategy="momentum", limit=20):
         data = get_stock_data(ticker)
         
         if not data:
+            continue
+        
+        # Handle error response
+        if data.get("error"):
+            print(f"  Error: {data.get('error')}")
             continue
         
         score = 0
