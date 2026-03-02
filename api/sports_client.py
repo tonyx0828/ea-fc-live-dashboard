@@ -289,9 +289,9 @@ class MultiSportAPIClient:
                     url = f"{base_url}/games"
                     params = {"date": today}
                 elif sport_key in ["football"]:
-                    # Football uses /fixtures endpoint
+                    # Football uses /fixtures endpoint (no status filter to get all games)
                     url = f"{base_url}/fixtures"
-                    params = {"date": today, "status": "LIVE"}
+                    params = {"date": today}
                 elif sport_key in ["nfl", "afl", "hockey", "baseball", "formula1", "handball", "mma", "rugby", "volleyball"]:
                     # Other sports - try fixtures
                     url = f"{base_url}/games"
