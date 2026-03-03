@@ -263,7 +263,8 @@ class MultiSportAPIClient:
     
     def get_all_live_matches(self) -> Dict[str, List]:
         """Get live matches for all available sports"""
-        result = {}
+        
+        # Try to use API first
         today = datetime.now().strftime("%Y-%m-%d")
         
         # Debug: print API key status
@@ -271,16 +272,10 @@ class MultiSportAPIClient:
         
         # Only try if we have a valid API key (not empty, not demo)
         if not self.api_key or len(str(self.api_key)) < 10:
-            # Return empty sports list for demo mode
-            for sport_key, sport_info in SPORTS.items():
-                result[sport_key] = {
-                    "name": sport_info["name"],
-                    "emoji": sport_info["emoji"],
-                    "count": 0,
-                    "matches": []
-                }
-            print("DEBUG: No valid API key, returning empty results")
-            return result
+            # Use mock data for demo
+            print("Using mock data (no valid API key)")
+            from .mock_data import get_mock_all_sports
+            return get_mock_all_sports()
         
         # Fetch data for each sport
         for sport_key, sport_info in SPORTS.items():
